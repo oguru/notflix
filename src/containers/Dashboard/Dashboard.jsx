@@ -5,13 +5,13 @@ import Movies from "../../components/Movies"
 
 const Dashboard = () => {
 
-  const [movie, getMovie] = useState("");
+  const [movieName, getMovieName] = useState("");
 
 
   return (
     <>
-      <Navbar getMovie={getMovie} />
-      <Movies movie={movie} />
+      <Navbar getMovieName={getMovieName} />
+      <Movies movieName={movieName} />
     </>
   );
 };

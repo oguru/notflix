@@ -3,7 +3,7 @@ import styles from "./Navbar.module.scss";
 import Button from "../Button";
 
 const Navbar = (props) => {
-  const { getMovie } = props;
+  const { getMovieName } = props;
 
   const [searchTxt, setSearchTxt] = useState("");
 
@@ -21,7 +21,7 @@ const Navbar = (props) => {
             class="form-control"
             id="basic-search"
             aria-describedby="basic-addon3" />
-          <Button isPrimary={true} btnTxt={"Search"} handleClick={() => getMovie(searchTxt)} />
+          <Button isPrimary={true} btnTxt={"Search"} handleClick={() => getMovieName(searchTxt)} />
         </div>
       </nav>
     </>
