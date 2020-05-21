@@ -5,37 +5,52 @@ import Grid from '@material-ui/core/Grid';
 
 const Dashboard = (props) => {
 
-  const {movieName, fetchData, movieResults, setMovieDetails} = props;
-  
-  const [movieHtmlArr, storeMovieHtml] = useState([]);
+  const {movieResults, fetchData, movieDetails} = props;
+
+  const [movieHtml, storeMovieHtml] = useState("")
 
   useEffect(() => {
-    const movieData = () => {
-      
-      return movieResults.map((movie, index) => {
-        return (
-          <Grid key={movie.imdbId} onClick={() => showDetails(index)} item xs={12} sm={6} md={4} lg={3} xl={2} className={styles.card}>
-            <img src={movie.Poster} alt={movie.Title}/>
-            <p>{movie.Title}</p>
-            <p>{movie.Year}</p>
-            <p>{movie.imdbID}</p>
-          </Grid>
-        )
-      }
-      )
+    if (movieResults && movieDetails.length === movieResults.length) {
+      createMovieCards();
     }
-    if (movieResults) {
-      storeMovieHtml(movieData());
-      // console.log(movieResults.map(movie => fetchData(movie.imdbID)))
-      
-      // setMovieDetails()
-    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [movieDetails])
 
-    // if (movieHtmlArr) {
-    //   fetchData()
-    // }
+  useEffect(() => {
+    if (movieResults) {
+      getMovieDetails(movieResults);
+      // createMovieCards();
+    }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [movieResults]);
+
+  const getMovieDetails = results => {
+    results.forEach(result => fetchData(result.imdbID, "id"));
+  };
+
+  const createMovieCards = () => {      
+    const movieMap = movieResults.map((movie, index) => {
+      // const imdbId = movie.imdbID;
+      
+      return (
+        <Grid key={movie.imdbID} onClick={() => showDetails(index)} item xs={12} sm={6} md={4} lg={3} xl={2} className={styles.card}>
+          <img src={movie.Poster} alt={movie.Title}/>
+          <h3>{movie.Title}</h3>
+          <p>{movie.Year}</p>
+          {/* <p>Score: {movieDetails[movie.imdbID].imdbRating}</p> */}
+
+        </Grid>
+      )
+    }
+    )
+    storeMovieHtml(movieMap)
+    for (let i = 0; i<movieDetails.length; i++) {
+      console.log(movieDetails[i].Title)
+      console.log(movieResults[i].Title)
+    }
+  }
+
+
 
   const showDetails = index => {
     alert(index);
@@ -45,7 +60,7 @@ const Dashboard = (props) => {
     <>
       {/* <Movies movieName={movieName} /> */}
       <Grid container>
-        {movieHtmlArr}
+        {movieHtml}
       </Grid>
     </>
   );
