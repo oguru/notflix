@@ -9,8 +9,11 @@ function App() {
   const [movieResults, setMovieResults] = useState();
   const [movieDetails, setMovieDetails] = useState([]);
 
+  //change useState to useReducer?
+
   useEffect(() => {
     if (movieName) {
+      setMovieDetails([]);
       fetchData(movieName);
     }
 // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -18,12 +21,7 @@ function App() {
 
   const setDetails = (result, type) => {
     if (type === "id") { 
-      const imdbId = result.imdbID;
-      const movDetailsObj = {
-        [imdbId] : result
-      }
-
-      setMovieDetails(movieDetails => [...movieDetails, movDetailsObj])
+      setMovieDetails(movieDetails => [...movieDetails, result])
     }  
     else {
       setMovieResults(result.Search);
