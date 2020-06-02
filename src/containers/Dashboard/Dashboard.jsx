@@ -3,26 +3,30 @@ import React, { useState, useEffect } from "react";
 import Movies from "../../components/Movies"
 import {Grid, Card} from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import {createUseStyles} from "react-jss";
+import { shadows } from '@material-ui/system';
 
 const useStyles = makeStyles({
   gridCard: {
     width: "300px",
-    height: "500px",
+    height: "560px",
     padding: "10px",
-    border: "black, 10px, solid",
-    "& $cardStyle": {
-      width: "280px",
-      height: "415px",
-      display: "flex",
-      flexDirection: "column",
-      justifyContent: "space-between"
-    },
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+
     "& img": {
       objectFit: "contain"
     }
   },
-  
+  cardStyle: {
+    width: "100%",
+    height: "100%",
+    padding: "10px",
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "space-between",
+    textAlign: "center"
+  },
 })
 
 const Dashboard = (props) => {
@@ -51,20 +55,23 @@ const Dashboard = (props) => {
 
   const classes = useStyles();
 
-  const createMovieCards = () => {      
+  const createMovieCards = (useState) => {  
+    
     const movieMap = movieDetails.map((movie, index) => {
       return (
-        <Grid key={movie.imdbID} onClick={() => showDetails(index)} className={classes.gridCard} item xs={12} sm={6} md={4} lg={3} xl={2} >
-          <Card className={classes.cardStyle}>
-            <img className={classes.cardImg} src={movie.Poster} alt={movie.Title}/>
-            <div>
-              <h3>{movie.Title}</h3>
-              <p>{movie.Year}</p>
-              <p>{movie.imdbRating}</p>
-            </div>
-            {/* <p>{movieDetails[imdbId]}</p> */}
-          </Card>
-        </Grid>
+        <MovieCard>
+          <Grid key={movie.imdbID} onClick={() => showDetails(index)} className={classes.gridCard} item xs={12} sm={6} md={4} lg={3} xl={2} >
+            <Card raised={raisedStatus} onMouseEnter={() => raisedStatus = true} onMouseLeave={() => raisedStatus = false} boxShadow={1} className={`${classes.cardStyle} `}>
+              <img className={classes.cardImg} src={movie.Poster} alt={movie.Title}/>
+              <div>
+                <h3>{movie.Title}</h3>
+                <p>{movie.Year}</p>
+                <p>{movie.imdbRating}</p>
+              </div>
+              {/* <p>{movieDetails[imdbId]}</p> */}
+            </Card>
+          </Grid>
+        </MovieCard>
       )
     }
     )
