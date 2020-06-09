@@ -1,28 +1,27 @@
 import React, { useState } from "react";
 import styles from "./Navbar.module.scss";
 // import Button from "../Button";
-import {InputBase, IconButton, Typography, Toolbar, AppBar, Button} from '@material-ui/core';
+import {InputBase, IconButton, Typography, Toolbar, AppBar, Button, Switch} from '@material-ui/core';
 import { fade, makeStyles } from '@material-ui/core/styles';
 import SearchIcon from '@material-ui/icons/Search';
 import notflixImg from "../../assets/notflix-logo-800.png";
-
+import HelpIcon from '@material-ui/icons/Help';
 
 const Navbar = (props) => {
-  const { getMovieName } = props;
+  const { getMovieName, displayMode, setDisplayMode } = props;
 
   const [searchTxt, setSearchTxt] = useState("");
 
+    // .MuiSwitch-switchBase {color} = switch main
+  // .MuiSwitch-colorSecondary.Mui-checked {color} = switch main when on
+
+  // .MuiSwitch-track {background-color: #000} = switch track when off
+  // .MuiSwitch-colorSecondary.Mui-checked + .MuiSwitch-track {background-color: red} = switch track when on
+
   const useStyles = makeStyles((theme) => ({
-    // root: {
-    //   flexGrow: 1,
-    // },
-    // title: {
-    //   flexGrow: 1,
-    //   display: 'none',
-    //   [theme.breakpoints.up('sm')]: {
-    //     display: 'block',
-    //   },
-    // },
+    appBarStyles: {
+      // backgroundColor: "#055E94"
+    },
     navStyles: {
       display: "flex",
       alignItems: "center",
@@ -31,8 +30,10 @@ const Navbar = (props) => {
     notflix: {
       height: '40px'
     },
+    displaySwitch: {
+      margin: theme.spacing(0, 2)
+    },
     search: {
-      // display: "flex",
       justifyContent: "center",
       position: 'relative',
       borderRadius: theme.shape.borderRadius,
@@ -40,13 +41,6 @@ const Navbar = (props) => {
       '&:hover': {
         backgroundColor: fade(theme.palette.common.white, 0.25),
       },
-      // marginLeft: 0,
-      // width: `400px`,
-      // width: '100%',
-      // [theme.breakpoints.up('sm')]: {
-      //   marginLeft: theme.spacing(1),
-      //   width: 'auto',
-      // },
     },
     searchIcon: {
       padding: theme.spacing(0, 2),
@@ -58,7 +52,8 @@ const Navbar = (props) => {
       justifyContent: 'center',
     },
     searchCont: {
-      display: "flex"
+      display: "flex",
+      alignItems: "center"
     },
     inputRoot: {
       color: 'inherit',
@@ -79,20 +74,29 @@ const Navbar = (props) => {
       marginLeft: theme.spacing(1),
     }
   }));
+
+  // const styledSwitch = styled
   
   const classes = useStyles();
 
+  const displayHelp = () => alert("help");
+
+  const handleKeyInput = e => {
+    // e.key === "enter" ? 
+    // setSearchTxt(e.target.value)
+    
+    // setSearchTxt(e.target.value)
+  }
+
   return (
     <>
-      <nav className={classes.root}>
-      <AppBar position="static">
+      {/* <nav className={classes.root}> */}
+      <AppBar className={classes.appBarStyles} position="static">
         <Toolbar className={classes.navStyles}>
-          {/* <Typography className={classes.title} variant="h6" noWrap>
-            Material-UI
-          </Typography> */}
           <img className={classes.notflix} src={notflixImg} alt="Notflix Logo"/>
-
           <div className={classes.searchCont}>
+              <HelpIcon className={classes.helpIcon} onClick={() => displayHelp()} />
+              <Switch className={classes.displaySwitch} />
             <div className={classes.search}>
               <span className={classes.searchIcon}>
                 <SearchIcon />
@@ -104,32 +108,19 @@ const Navbar = (props) => {
                   input: classes.inputInput,
                 }}
                 inputProps={{ 'aria-label': 'search' }}
+                onKeyPress={e => e.key === "Enter" ? getMovieName(searchTxt) : null}
                 onInput={e => setSearchTxt(e.target.value)}
               />
             </div>
-            <Button className={classes.button}
-              onClick={() => getMovieName(searchTxt)} variant="contained" color="primary">
+            <Button id="searchButton" className={classes.button}
+              onClick={() => getMovieName(searchTxt)} variant="contained" color="secondary">
                 Go!
             </Button>
           </div>
-
         </Toolbar>
       </AppBar>
 
-        {/* <label for="basic-search"></label>
-        <div class="input-group mb-3">
-          <div class="input-group-prepend">
-            <span class="input-group-text" id="basic-addon3">Search here...</span>
-          </div>
-          <input
-            onInput={e => setSearchTxt(e.target.value)}
-            type="text"
-            class="form-control"
-            id="basic-search"
-            aria-describedby="basic-addon3" />
-          <Button isPrimary={true} btnTxt={"Search"} handleClick={() => getMovieName(searchTxt)} />
-        </div> */}
-      </nav>
+      {/* </nav> */}
     </>
   );
 };
