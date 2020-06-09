@@ -1,3 +1,8 @@
+To Update:
+
+Colour of switch tracker when on
+Trigger button click on enter
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
