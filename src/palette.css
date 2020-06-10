@@ -6,7 +6,7 @@
     }
     .background {
       /* paper:  */
-      color: #163b50;
+      color: #0a2332;
       /* default:  */
       color: #163b50
     }
@@ -16,7 +16,7 @@
       /* main:  */
       color: #0a2332;
       /* dark:  */
-      color: rgba(37, 130, 187, 1);
+      color: #2582bb;
       /* contrastText:  */
       color: #fff
     }
@@ -24,7 +24,7 @@
       /* light:  */
       color: #ff4081;
       /* main:  */
-      color: rgba(229, 9, 20, 1);
+      color: #e50914;
       /* dark:  */
       color: #2b59c3;
       /* contrastText:  */

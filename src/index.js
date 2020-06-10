@@ -10,16 +10,15 @@ import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 const theme = createMuiTheme({
   overrides: {
     MuiSwitch: {
-      "&$checked": {
-        track: {
-        backgroundColor: "#c9c254",
-        opacity: 1
-        }
-      },
+      // "&$checked": {
+      //   track: {
+      //   backgroundColor: "#c9c254",
+      //   opacity: 1
+      //   }
+      // },
       track: {
         backgroundColor: "#2b59c3",
         opacity: 1
-        
       }
     } 
   },
@@ -29,7 +28,7 @@ const theme = createMuiTheme({
       white: "#fff"
     },
     background: {
-      paper: "rgba(22, 59, 80, 1)",
+      paper: "#0a2332",
       default: "#163b50"
     },
     primary: {
@@ -61,7 +60,7 @@ const theme = createMuiTheme({
 // #055E94 - old nav colour
 // #4486AF - old search colour
 
-//#0d3b4d page bg
+//#163b50 page bg
 //#0f2837 card and nav bg
 
 ReactDOM.render(

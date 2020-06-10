@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-// import styles from "./Dashboard.module.scss";
 import MovieCard from "../../components/MovieCard"
 import {Grid, Card} from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
@@ -62,8 +61,6 @@ const Dashboard = (props) => {
     }
     )
   }
-
-
 
   const showDetails = index => {
     alert(index);

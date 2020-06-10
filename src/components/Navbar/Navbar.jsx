@@ -1,15 +1,17 @@
 import React, { useState } from "react";
 import styles from "./Navbar.module.scss";
 // import Button from "../Button";
-import {InputBase, IconButton, Typography, Toolbar, AppBar, Button, Switch} from '@material-ui/core';
+import {InputBase, IconButton, Typography, Toolbar, AppBar, Button, Switch, Popper, Paper} from '@material-ui/core';
 import { fade, makeStyles } from '@material-ui/core/styles';
 import SearchIcon from '@material-ui/icons/Search';
 import notflixImg from "../../assets/notflix-logo-800.png";
 import HelpIcon from '@material-ui/icons/Help';
+import zIndex from "@material-ui/core/styles/zIndex";
 
 const Navbar = (props) => {
   const { getMovieName, displayMode, setDisplayMode } = props;
 
+  const [anchorEl, setAnchorEl] = useState(null);
   const [searchTxt, setSearchTxt] = useState("");
 
     // .MuiSwitch-switchBase {color} = switch main
@@ -29,6 +31,29 @@ const Navbar = (props) => {
     },
     notflix: {
       height: '40px'
+    },
+    popper: {
+      zIndex: 3000
+    },
+    helpIcon: {
+      transition: "0.1s",
+      cursor: "pointer",
+      "&:hover": {
+        color: "#2b59c3"
+      },
+      "&:active": {
+        color: "#e50914"
+      }
+    },
+    paperHelp: {
+      backgroundColor: "white",
+      padding: theme.spacing(1),
+      margin: theme.spacing(2, 0),
+      width: "300px",
+      boxShadow: "0px 4px 12px -2px rgba(201,201,201,0.4)"
+    },
+    helpTitle: {
+      fontWeight: "bold"
     },
     displaySwitch: {
       margin: theme.spacing(0, 2)
@@ -79,14 +104,19 @@ const Navbar = (props) => {
   
   const classes = useStyles();
 
-  const displayHelp = () => alert("help");
+  const toggleHelp = (event) => {
+    setAnchorEl(anchorEl ? null : event.currentTarget);
+  };
 
-  const handleKeyInput = e => {
-    // e.key === "enter" ? 
-    // setSearchTxt(e.target.value)
+  const helpOpen = Boolean(anchorEl);
+  const helpId = helpOpen ? 'popper' : undefined;
+
+  // const handleKeyInput = e => {
+  //   // e.key === "enter" ? 
+  //   // setSearchTxt(e.target.value)
     
-    // setSearchTxt(e.target.value)
-  }
+  //   // setSearchTxt(e.target.value)
+  // }
 
   return (
     <>
@@ -95,8 +125,20 @@ const Navbar = (props) => {
         <Toolbar className={classes.navStyles}>
           <img className={classes.notflix} src={notflixImg} alt="Notflix Logo"/>
           <div className={classes.searchCont}>
-              <HelpIcon className={classes.helpIcon} onClick={() => displayHelp()} />
-              <Switch className={classes.displaySwitch} />
+            <Popper className={classes[helpId]} open={helpOpen} anchorEl={anchorEl}>
+              {/* <div className={classes.helpWindow}> */}
+                <Paper className={classes.paperHelp} variant="outlined" backgroundColor="white" elevation={23}>
+                  <Typography paragraph={true}><span className={classes.helpTitle}>Switch On - Full Mode:</span> Loads all movie details allowing scores to be shown on front of cards.</Typography>
+                  <Typography paragraph={true}><span className={classes.helpTitle}>Switch Off - Fast Mode:</span> Loads images, titles and years of movies.</Typography>
+                  <Typography>Click on a movie card to see more detailed information (including scores).</Typography>
+                </Paper>
+              {/* </div> */}
+            </Popper>
+              <HelpIcon className={classes.helpIcon} onClick={toggleHelp} />
+              <Switch 
+                className={classes.displaySwitch}
+                onChange={() => setDisplayMode(!displayMode)} 
+                checked={displayMode}/>
             <div className={classes.search}>
               <span className={classes.searchIcon}>
                 <SearchIcon />
