@@ -9,7 +9,7 @@ import HelpIcon from '@material-ui/icons/Help';
 import zIndex from "@material-ui/core/styles/zIndex";
 
 const Navbar = (props) => {
-  const { getMovieName, displayMode, setDisplayMode } = props;
+  const { getMovieName, detailMode, setDetailMode, } = props;
 
   const [anchorEl, setAnchorEl] = useState(null);
   const [searchTxt, setSearchTxt] = useState("");
@@ -22,12 +22,12 @@ const Navbar = (props) => {
 
   const useStyles = makeStyles((theme) => ({
     appBarStyles: {
-      // backgroundColor: "#055E94"
+      marginBottom: "16px"
     },
     navStyles: {
       display: "flex",
       alignItems: "center",
-      justifyContent: "space-between"
+      justifyContent: "space-between",
     },
     notflix: {
       height: '40px'
@@ -50,7 +50,8 @@ const Navbar = (props) => {
       padding: theme.spacing(1),
       margin: theme.spacing(2, 0),
       width: "300px",
-      boxShadow: "0px 4px 12px -2px rgba(201,201,201,0.4)"
+      boxShadow: "0px 4px 12px -2px rgba(201,201,201,0.4)",
+      color: "rgb(0, 0, 0, 1)"
     },
     helpTitle: {
       fontWeight: "bold"
@@ -137,8 +138,8 @@ const Navbar = (props) => {
               <HelpIcon className={classes.helpIcon} onClick={toggleHelp} />
               <Switch 
                 className={classes.displaySwitch}
-                onChange={() => setDisplayMode(!displayMode)} 
-                checked={displayMode}/>
+                onChange={() => setDetailMode(!detailMode)} 
+                checked={detailMode}/>
             <div className={classes.search}>
               <span className={classes.searchIcon}>
                 <SearchIcon />

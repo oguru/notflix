@@ -10,7 +10,7 @@ function App() {
   const [movieName, getMovieName] = useState();
   const [movieResults, setMovieResults] = useState();
   const [movieDetails, setMovieDetails] = useState([]);
-  const [displayMode, setDisplayMode] = useState([true])
+  const [detailMode, setDetailMode] = useState([true])
 
   //change useState to useReducer?
 
@@ -18,7 +18,11 @@ function App() {
     app: {
       backgroundColor: theme.palette.background.default,
       width: "100vw",
-      height: "100vh"
+      minHeight: "100vh",
+      height: "100%"
+    },
+    dashboard: {
+      padding: "0px 16px"
     }
   }))
 
@@ -27,10 +31,11 @@ function App() {
   useEffect(() => {
     if (movieName) {
       setMovieDetails([]);
+      setMovieResults();
       fetchData(movieName);
     }
 // eslint-disable-next-line react-hooks/exhaustive-deps
-}, [movieName]);
+}, [movieName, detailMode]);
 
   const setDetails = (result, type) => {
     if (type === "id") { 
@@ -52,8 +57,10 @@ function App() {
   return (
     <>
       <section className={classes.app}>
-        <Navbar getMovieName={getMovieName} setDisplayMode={setDisplayMode} displayMode={displayMode} />
-        <Dashboard movieResults={movieResults} movieDetails={movieDetails} fetchData={fetchData} />
+        <Navbar getMovieName={getMovieName} setDetailMode={setDetailMode} detailMode={detailMode} />
+        <section className={classes.dashboard}>
+          <Dashboard detailMode={detailMode} movieResults={movieResults} movieDetails={movieDetails} fetchData={fetchData} />
+        </section>
       </section>
     </>
   );

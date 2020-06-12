@@ -20,7 +20,8 @@ const theme = createMuiTheme({
         backgroundColor: "#2b59c3",
         opacity: 1
       }
-    } 
+    }
+    // MuiTypography
   },
   palette: {
     common: {
@@ -50,7 +51,7 @@ const theme = createMuiTheme({
       contrastText: "#fff"
     },
     text: {
-      primary: "rgba(0, 0, 0, 0.87)",
+      primary: "rgba(255, 255, 255, 1)",
       secondary: "rgba(0, 0, 0, 0.54)",
       disabled: "rgba(0, 0, 0, 0.38)",
       hint: "rgba(0, 0, 0, 0.38)"
