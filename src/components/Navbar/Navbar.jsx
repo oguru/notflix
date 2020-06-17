@@ -9,7 +9,7 @@ import HelpIcon from '@material-ui/icons/Help';
 import zIndex from "@material-ui/core/styles/zIndex";
 
 const Navbar = (props) => {
-  const { getMovieName, detailMode, setDetailMode, } = props;
+  const { getMovieName, detailMode, changeDetailMode, } = props;
 
   const [anchorEl, setAnchorEl] = useState(null);
   const [searchTxt, setSearchTxt] = useState("");
@@ -138,7 +138,7 @@ const Navbar = (props) => {
               <HelpIcon className={classes.helpIcon} onClick={toggleHelp} />
               <Switch 
                 className={classes.displaySwitch}
-                onChange={() => setDetailMode(!detailMode)} 
+                onChange={() => changeDetailMode()} 
                 checked={detailMode}/>
             <div className={classes.search}>
               <span className={classes.searchIcon}>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import styles from "./MovieCard.module.scss";
-import {Grid, Card, Typography, Grow} from '@material-ui/core';
+import {Grid, Card, Typography, Grow, Box} from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 
 const MovieCard = (props) => {
@@ -23,6 +23,10 @@ const MovieCard = (props) => {
       // }
     },
 
+    textSpacing: {
+      margin: "16px"
+    },
+
     cardImg: {
       objectFit: "contain",
       maxHeight: "360px",
@@ -43,12 +47,8 @@ const MovieCard = (props) => {
 
   const movieRating = () => detailMode ? movie.imdbRating : "";
 
-  const cardExpand = (hovered ? "cardExpandOn" : "cardExpandOff");
+  const cardExpand = ((hovered && detailMode) ? "cardExpandOn" : "cardExpandOff");
 
-  
-
-  console.log(cardExpand);
-  
 
   // const hoverAnimation = (movie) => {
 
@@ -58,13 +58,15 @@ const MovieCard = (props) => {
     <>
       <Card raised={hovered} 
         onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)} boxShadow={1} className={`${classes.movieCard} ${classes[cardExpand]}`}>
-          {/* <Grow in={true}> */}
             <img className={classes.cardImg} src={movie.Poster} alt={movie.Title}/>
-          {/* </Grow> */}
-          <div>
-            <Typography variant="h6">{movie.Title}</Typography>
-            <Typography component="p">{movie.Year}</Typography>
-            <Typography component="p">{movieRating()}</Typography>
+          <div >
+            <Typography className={classes.textSpacing} variant="h6">
+              <Box lineHeight={1}>
+                {movie.Title}
+              </Box>
+            </Typography>
+            <Typography className={classes.textSpacing} component="p">{movie.Year}</Typography>
+            <Typography className={classes.textSpacing} component="p">{movieRating()}</Typography>
           </div>
           {/* <p>{movieDetails[imdbId]}</p> */}
         </Card>

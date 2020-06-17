@@ -20,7 +20,7 @@ const Dashboard = (props) => {
   const {movieResults, fetchData, movieDetails, detailMode} = props;
 
   useEffect(() => {
-    if (movieResults && detailMode) {
+    if (movieResults.length > 0 && detailMode) {
       getMovieDetails(movieResults);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -41,8 +41,10 @@ const Dashboard = (props) => {
 
   const createMovieCards = () => {  
     if (movieResults) {
-      const detailType = detailMode ? movieDetails : movieResults;
       
+      const detailType = detailMode ? movieDetails : movieResults;
+      // const detailType = detailMode ? movieDetails : [].concat(...movieResults);
+
       return detailType.map((movie, index) => {
         return (
           <Grow in={true} appear={true}>
