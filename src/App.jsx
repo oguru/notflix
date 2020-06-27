@@ -6,14 +6,18 @@ import { createMuiTheme, ThemeProvider, makeStyles } from '@material-ui/core/sty
 import BottomScrollListener from 'react-bottom-scroll-listener';
 
 
-
 function App() {
 
+  const [searchTxt, setSearchTxt] = useState("");
   const [movieName, setMovieName] = useState();
   const [page, setPage] = useState(1);
   const [movieResults, setMovieResults] = useState([]);
   const [movieDetails, setMovieDetails] = useState([]);
-  const [detailMode, setDetailMode] = useState([true])
+  const [detailMode, setDetailMode] = useState(true);
+  const [posterImages, setImage] = useState([]);
+  const [modalState, setModalState] = useState(false);
+  const [modalData, storeModal] = useState("");
+  
   // const [dashMessage, setDashMessage] = useState("Type a movie name in the search bar to get started.")
 
   //change useState to useReducer?
@@ -44,6 +48,7 @@ function App() {
 }, [movieName, detailMode, page]);
 
   const reInitSearch = () => {
+    setMovieName()
     setMovieDetails([]);
     setMovieResults([]);
     setPage(1)
@@ -55,17 +60,27 @@ function App() {
   }
 
   const getMovieName = (name) => {
-    reInitSearch()
-    setMovieName(name)
+    reInitSearch();
+    setMovieName(name);
   }
 
   const setDetails = (result, type) => {
-    if (type === "id") { 
-      setMovieDetails(movieDetails => [...movieDetails, result])
+    if (type === "id") {
+      if (detailMode) {
+        setMovieDetails(movieDetails => [...movieDetails, result])
+      } 
+      else {
+        // setMovieDetails(result)
+        storeModal(result)
+      }
     }  
-    else {
-      setMovieResults(() => [...movieResults.concat(...result.Search)]);
-      console.log(movieResults);
+    else if (result.Search) {
+      if (detailMode) {
+        setMovieResults(result.Search);
+      }
+      else {      
+        setMovieResults(() => [...movieResults.concat(...result.Search)]);
+      }
     }
   }
 
@@ -77,14 +92,38 @@ function App() {
     .catch(err => console.log(err))
   }
 
+  const addPage = () => {
+    const searchType = detailMode ? movieDetails : movieResults;
+    if (searchType.length / page % 10 === 0) {
+        setPage(page+1);
+      }
+  }
+
   return (
     <>
       <section className={classes.app}>
-        <Navbar getMovieName={getMovieName} changeDetailMode={changeDetailMode} />
+        <Navbar 
+          getMovieName={getMovieName} 
+          changeDetailMode={changeDetailMode} 
+          detailMode={detailMode} 
+          searchTxt={searchTxt} 
+          setSearchTxt={setSearchTxt} />
         <section className={classes.dashboard}>
-          <Dashboard detailMode={detailMode} movieResults={movieResults} movieDetails={movieDetails} fetchData={fetchData} />
+          <Dashboard 
+            detailMode={detailMode} 
+            movieResults={movieResults} 
+            setMovieDetails={setMovieDetails} 
+            movieDetails={movieDetails} 
+            fetchData={fetchData} 
+            setImage={setImage} 
+            posterImages={posterImages} 
+            modalState={modalState} 
+            setModalState={setModalState}
+            storeModal={storeModal}
+            modalData={modalData} 
+            />
         </section>
-      <BottomScrollListener onBottom={() => setPage(page+1)} />
+      <BottomScrollListener onBottom={() => addPage()} />
       </section>
     </>
   );

@@ -9,10 +9,9 @@ import HelpIcon from '@material-ui/icons/Help';
 import zIndex from "@material-ui/core/styles/zIndex";
 
 const Navbar = (props) => {
-  const { getMovieName, detailMode, changeDetailMode, } = props;
+  const { getMovieName, detailMode, changeDetailMode, searchTxt, setSearchTxt} = props;
 
   const [anchorEl, setAnchorEl] = useState(null);
-  const [searchTxt, setSearchTxt] = useState("");
 
     // .MuiSwitch-switchBase {color} = switch main
   // .MuiSwitch-colorSecondary.Mui-checked {color} = switch main when on
@@ -118,7 +117,7 @@ const Navbar = (props) => {
     
   //   // setSearchTxt(e.target.value)
   // }
-
+  
   return (
     <>
       {/* <nav className={classes.root}> */}
@@ -150,13 +149,15 @@ const Navbar = (props) => {
                   root: classes.inputRoot,
                   input: classes.inputInput,
                 }}
+                value={searchTxt}
                 inputProps={{ 'aria-label': 'search' }}
                 onKeyPress={e => e.key === "Enter" ? getMovieName(searchTxt) : null}
-                onInput={e => setSearchTxt(e.target.value)}
+                onInput={e =>  setSearchTxt(e.target.value)}
               />
             </div>
             <Button id="searchButton" className={classes.button}
-              onClick={() => getMovieName(searchTxt)} variant="contained" color="secondary">
+              onClick={() => getMovieName(searchTxt)} 
+              variant="contained" color="secondary">
                 Go!
             </Button>
           </div>
