@@ -70,7 +70,6 @@ function App() {
         setMovieDetails(movieDetails => [...movieDetails, result])
       } 
       else {
-        // setMovieDetails(result)
         storeModal(result)
       }
     }  

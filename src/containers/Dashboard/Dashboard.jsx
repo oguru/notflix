@@ -4,59 +4,50 @@ import ModalCard from "../../components/ModalCard";
 import {Grid, Grow, Modal, Fade, Backdrop} from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { shadows } from '@material-ui/system';
-import useImage from 'use-image';
 
-const useStyles = makeStyles((theme) => ({
-  gridCard: {
-    width: "100px",
-    height: "500px",
-    padding: "10px",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center"
-  }
-  }))
 
 const Dashboard = (props) => {
   
   const {movieResults, fetchData, setMovieDetails, movieDetails, detailMode, modalState, 
     storeModal, modalData, 
     setModalState} = props;
-  
-  // const [image, status] = useImage(url, "NA");
-  const [imgCount, setImgCount] = useState(0)
-  // const [modalData, storeModal] = useState("");
+    
+    const [imgCount, setImgCount] = useState(0)
+    const [cardHeight, setCardHeight] = useState(500)
+    
+    
+    useEffect(() => {
+      if (movieResults.length > 0 && detailMode) {
+        getMovieDetails(movieResults);
+      }
+      if (detailMode) {
+        setCardHeight(500)
+      }
+      else {
+        setCardHeight(450)
+      }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [movieResults]);
 
-
-  useEffect(() => {
-    if (movieResults.length > 0 && detailMode) {
-      getMovieDetails(movieResults);
-    }
-
-    // if (modalState && !detailMode) {
-    //   fetchData(movie, "id")
-    // }
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [movieResults]);
-  
-  // useEffect(() => {
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [modalData, modalState]);
+    console.log(cardHeight);
+    
+    
+    const useStyles = makeStyles((theme) => ({
+      gridCard: {
+        // width: "100px",
+        height: `${cardHeight}px`,
+        padding: "12px",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center"
+      }
+      }))
 
   const getMovieDetails = results => {
     results.forEach(result => fetchData(result.imdbID, "id"));
   };
 
   const classes = useStyles();
-
-  // const modalVis = modalState ? "display: fixed" : "display: none"
-
-  // let modalCard = "";
-
-  //  if (modalState) {
-  //    modalCard = <ModalCard movie={modalData} />
-  //  }
 
   const showModal = movie => {
     setModalState(true)
@@ -68,11 +59,7 @@ const Dashboard = (props) => {
       }
   }
 
-  console.log(modalData);
-  
-
   const closeModal = () => {
-    // modalCard = "";
     storeModal("")
     setModalState(false)
   }

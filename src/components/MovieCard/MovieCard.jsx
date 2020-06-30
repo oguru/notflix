@@ -11,55 +11,74 @@ import rtIcon from "../../assets/tomato-svg-logo-2.png"
 const MovieCard = (props) => {
   const { movie, detailMode, index, setImgCount, imgCount, movieImages } = props;
 
-  
   const [hovered, setHovered] = useState(false)
   
   const useStyles = makeStyles((theme) => ({
-
+    
     movieCard: {
-      width: "100%",
+      width: "300px",
       height: "100%",
-      padding: "20px 10px 10px 10px",
+      padding: "20px",
       display: "flex",
       flexDirection: "column",
       justifyContent: "space-between",
       textAlign: "center",
-      // p: {
-      //   color: theme.palette.common.white
-      // }
-    },
-
+      },
+      
     flexColumn: {
       display: "flex",
       flexDirection: "column",
       justifyContent: "flex-start",
       alignItems: "center"
     },
-
+    
     noPosterStyle: {
       position: "absolute",
       top: "40px",
       maxWidth: "60%"
     },
-
+    
     textSpacing: {
-      margin: "4px"
+      margin: "5px"
     },
-
+    
     cardImg: {
       objectFit: "contain",
-      maxHeight: "320px",
-      minWidth: "250px"
+      maxHeight: "300px",
+      minWidth: "250px",
+      maxWidth: "260px",
+      // marginBottom: "10px",
+      borderRadius: "4px"
+    },
+    
+    title: {
+      fontSize: "16px",
+      height: "75px",
+      // marginBottom: "15px",
+      display: "flex", 
+      justifyContent: "center", 
+      alignItems: "center"
     },
 
+    cardBottom: {
+      height: "130px",
+      display: "flex",
+      flexDirection: "column",
+      justifyContent: "space-between"
+    },
+    
     scores: {
       display: "flex", 
       justifyContent: "space-around", 
       alignItems: "center"
     },
 
+    scoreText: {
+      fontSize: "14px"
+    },
+    
     rating: {
-      height: "60px",
+      height: "55px",
       width: "40px",
       display: "flex",
       flexDirection: "column",
@@ -67,11 +86,15 @@ const MovieCard = (props) => {
       alignItems: "center"
     },
 
+    ratingIcon: {
+      height: "25px"
+    },
+    
     cardExpandOn: {
-      transform: "scale(1.1)",
+      transform: "scale(1.075)",
       transition: "0.2s ease-in-out"
     },
-
+    
     cardExpandOff: {
       transform: "scale(1)",
       transition: "0.2s ease-in-out"
@@ -79,7 +102,7 @@ const MovieCard = (props) => {
   }));
   
   const classes = useStyles();
-
+  
   let poster, noPosterTxt = ""; 
   
   if (movie.Poster === "N/A") {
@@ -93,7 +116,7 @@ const MovieCard = (props) => {
   else {
     poster = movie.Poster;
   }
-
+  
   // const movieRating = () => detailMode ? movie.imdbRating : "";
 
   const getRating = rating => {
@@ -115,8 +138,8 @@ const MovieCard = (props) => {
 
     return (
       <div className={classes.rating}>
-        <img src={siteIcon} alt={siteName}/>
-        <Typography className={classes.textSpacing} component="p">{rating.Value}</Typography>
+        <img className={classes.ratingIcon} src={siteIcon} alt={siteName}/>
+        <Typography className={`${classes.textSpacing} ${classes.scoreText}`} component="p">{rating.Value}</Typography>
     </div>
     )
 
@@ -145,13 +168,13 @@ const MovieCard = (props) => {
             </div>
             <img className={classes.cardImg} src={poster} alt={movie.Title}/>
           </div>
-          <div >
-            <Typography className={classes.textSpacing} variant="h6">
+          <div className={classes.cardBottom}>
+            <Typography id={`title${index}`} className={`${classes.textSpacing} ${classes.title}`} variant="h6">
               <Box lineHeight={1}>
-                {movie.Title}
+                {`${movie.Title} (${movie.Year})`}
               </Box>
             </Typography>
-            <Typography className={classes.textSpacing} component="p">{movie.Year}</Typography>
+            {/* <Typography className={classes.textSpacing} component="p">{movie.Year}</Typography> */}
             {movieRatings()}
           </div>
           {/* <p>{movieDetails[imdbId]}</p> */}
@@ -159,11 +182,5 @@ const MovieCard = (props) => {
     </>
   );
 };
-
-
-// const movieData = () => {
-//   return (movieResults.map(movie =>
-//     <p>{`${movie[0]}: ${movie[1]}`}</p>))
-// }
 
 export default MovieCard;

@@ -10,17 +10,21 @@ import rtIcon from "../../assets/tomato-svg-logo-2.png"
 const ModalCard = (props) => {
   const {modalState, modalData, movie, detailMode, setMovieDetails} = props;
 
+  const modalWidth = 300;
+
   const useStyles = makeStyles((theme) => ({
 
     modalCard: {
       position: "fixed",
-      left: "25vw",
+      left: `calc(50vw - ${modalWidth}px/2)`,
+      // left: "calc(50vw - modalWidth/2)px",
       top: "25vh",
-      width: "50vw",
+      width: `${modalWidth}px`,
       height: "50vh",
-      backgroundColor: "#9DB9C9",
+      padding: "16px",
+      backgroundColor: "white",
       boxShadow: theme.shadows[5],
-      border: "black 2px solid"
+      borderRadius: "4px"
     },
 
     rating: {
