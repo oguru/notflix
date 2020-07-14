@@ -8,18 +8,17 @@ import imdbIcon from "../../assets/imdb-logo.png"
 import metaIcon from "../../assets/metacritic-icon.png"
 import rtIcon from "../../assets/tomato-svg-logo-2.png"
 
-const MovieCard = (props) => {
-  const { movie, detailMode, showModal, index, setImgCount, imgCount, movieImages } = props;
+const InfoCard = () => {
+  const { movie, detailMode, index, setImgCount, imgCount, movieImages, type } = props;
 
   const [hovered, setHovered] = useState(false)
-  const [hoverLink, setHoverLink] = useState(false)
   
   const useStyles = makeStyles((theme) => ({
     
     movieCard: {
       width: "300px",
       height: "100%",
-      padding: theme.spacing(2.5),
+      padding: "20px",
       display: "flex",
       flexDirection: "column",
       justifyContent: "space-between",
@@ -35,7 +34,7 @@ const MovieCard = (props) => {
     
     noPosterStyle: {
       position: "absolute",
-      top: theme.spacing(5),
+      top: "40px",
       maxWidth: "60%"
     },
     
@@ -49,7 +48,7 @@ const MovieCard = (props) => {
       minWidth: "250px",
       maxWidth: "260px",
       // marginBottom: "10px",
-      borderRadius: theme.spacing(0.5)
+      borderRadius: "4px"
     },
     
     title: {
@@ -88,17 +87,7 @@ const MovieCard = (props) => {
     },
 
     ratingIcon: {
-      height: theme.spacing(3),
-      transition: "0.2s",
-      "a": {
-        outline: "0",
-        border: "none"
-      },
-      "&:hover": {
-        transform: "translate(0, -3px)",
-        filter: "drop-shadow(0 3px 3px grey)"
-        // transform: "translate(0, 5px)"
-      }
+      height: "25px"
     },
     
     cardExpandOn: {
@@ -133,29 +122,23 @@ const MovieCard = (props) => {
   const getRating = rating => {
     const siteName = rating.Source;
     let siteIcon;
-    let siteLink;
 
     switch (rating.Source) {
       case "Internet Movie Database":
-        siteIcon = imdbIcon;
-        siteLink = `https://www.imdb.com/title/${movie.imdbID}`;
+        siteIcon = imdbIcon
         break;
       case "Rotten Tomatoes":
         siteIcon = rtIcon
-        siteLink = `https://www.rottentomatoes.com/search?search=${movie.Title}`
         break;
       case "Metacritic":
         siteIcon = metaIcon
-        siteLink = `https://www.metacritic.com/search/all/${movie.Title}/results`
         break;
       default: break;
     }
 
     return (
-      <div onMouseEnter={() => setHoverLink(true)} onMouseOut={() => setHoverLink(false)} className={classes.rating}>
-        <a href={siteLink} rel={"noopener noreferrer"} target={"_blank"}>
-          <img className={classes.ratingIcon} src={siteIcon} alt={siteName}/>
-        </a>
+      <div className={classes.rating}>
+        <img className={classes.ratingIcon} src={siteIcon} alt={siteName}/>
         <Typography className={`${classes.textSpacing} ${classes.scoreText}`} component="p">{rating.Value}</Typography>
     </div>
     )
@@ -178,9 +161,7 @@ const MovieCard = (props) => {
   return (
     <>
       <Card raised={hovered} 
-        onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)} 
-        onClick={() => showModal(movie, hoverLink)}
-        boxShadow={1} className={`${classes.movieCard} ${classes[cardExpand]}`}>
+        onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)} boxShadow={1} className={`${classes.movieCard} ${classes[cardExpand]}`}>
           <div className={classes.flexColumn}>
             <div className={`${classes.noPosterStyle} ${classes.flexColumn}`}>
               {noPosterTxt}
@@ -188,7 +169,7 @@ const MovieCard = (props) => {
             <img className={classes.cardImg} src={poster} alt={movie.Title}/>
           </div>
           <div className={classes.cardBottom}>
-            <Typography className={`${classes.textSpacing} ${classes.title}`} variant="h6">
+            <Typography id={`title${index}`} className={`${classes.textSpacing} ${classes.title}`} variant="h6">
               <Box lineHeight={1}>
                 {`${movie.Title} (${movie.Year})`}
               </Box>
@@ -202,4 +183,5 @@ const MovieCard = (props) => {
   );
 };
 
-export default MovieCard;
+
+export default InfoCard;

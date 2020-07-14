@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import styles from "./Navbar.module.scss";
 // import Button from "../Button";
-import {InputBase, IconButton, Typography, Toolbar, AppBar, Button, Switch, Popper, Paper} from '@material-ui/core';
+import {InputBase, IconButton, Typography, Toolbar, AppBar, Button, Switch, Popper, Paper, SwipeableDrawer} from '@material-ui/core';
+import CloseIcon from '@material-ui/icons/Close';
 import { fade, makeStyles } from '@material-ui/core/styles';
 import SearchIcon from '@material-ui/icons/Search';
 import notflixImg from "../../assets/notflix-logo-800.png";
@@ -12,6 +13,7 @@ const Navbar = (props) => {
   const { getMovieName, detailMode, changeDetailMode, searchTxt, setSearchTxt} = props;
 
   const [anchorEl, setAnchorEl] = useState(null);
+  const [navOpen, toggleNav] = useState(false)
 
     // .MuiSwitch-switchBase {color} = switch main
   // .MuiSwitch-colorSecondary.Mui-checked {color} = switch main when on
@@ -21,7 +23,13 @@ const Navbar = (props) => {
 
   const useStyles = makeStyles((theme) => ({
     appBarStyles: {
-      marginBottom: "16px"
+      marginBottom: theme.spacing(2)
+    },
+    closeIcon: {
+      position: "absolute",
+      top: theme.spacing(3),
+      right: theme.spacing(1),
+      cursor: "pointer"
     },
     navStyles: {
       display: "flex",
@@ -29,7 +37,7 @@ const Navbar = (props) => {
       justifyContent: "space-between",
     },
     notflix: {
-      height: '40px'
+      height: theme.spacing(5)
     },
     popper: {
       zIndex: 3000
@@ -82,6 +90,9 @@ const Navbar = (props) => {
     },
     inputRoot: {
       color: 'inherit',
+      // [theme.breakpoints.up('sm')]: {
+
+      // }
     },
     inputInput: {
       padding: theme.spacing(1, 1, 1, 0),
@@ -121,49 +132,56 @@ const Navbar = (props) => {
   return (
     <>
       {/* <nav className={classes.root}> */}
-      <AppBar className={classes.appBarStyles} position="static">
-        <Toolbar className={classes.navStyles}>
-          <img className={classes.notflix} src={notflixImg} alt="Notflix Logo"/>
-          <div className={classes.searchCont}>
-            <Popper className={classes[helpId]} open={helpOpen} anchorEl={anchorEl}>
-              {/* <div className={classes.helpWindow}> */}
-                <Paper className={classes.paperHelp} variant="outlined" backgroundColor="white" elevation={23}>
-                  <Typography paragraph={true}><span className={classes.helpTitle}>Switch On - Full Mode:</span> Loads all movie details allowing scores to be shown on front of cards.</Typography>
-                  <Typography paragraph={true}><span className={classes.helpTitle}>Switch Off - Fast Mode:</span> Loads images, titles and years of movies.</Typography>
-                  <Typography>Click on a movie card to see more detailed information (including scores).</Typography>
-                </Paper>
-              {/* </div> */}
-            </Popper>
-              <HelpIcon className={classes.helpIcon} onClick={toggleHelp} />
-              <Switch 
-                className={classes.displaySwitch}
-                onChange={() => changeDetailMode()} 
-                checked={detailMode}/>
-            <div className={classes.search}>
-              <span className={classes.searchIcon}>
-                <SearchIcon />
-              </span>
-              <InputBase
-                placeholder="Search…"
-                classes={{
-                  root: classes.inputRoot,
-                  input: classes.inputInput,
-                }}
-                value={searchTxt}
-                inputProps={{ 'aria-label': 'search' }}
-                onKeyPress={e => e.key === "Enter" ? getMovieName(searchTxt) : null}
-                onInput={e =>  setSearchTxt(e.target.value)}
-              />
+      {/* <SwipeableDrawer             
+        open={navOpen}
+        anchor={"top"}
+        onClose={toggleNav(false)}
+        onOpen={toggleNav(true)}
+      > */}
+        <AppBar className={classes.appBarStyles} position="static">
+          <Toolbar className={classes.navStyles}>
+            <img className={classes.notflix} src={notflixImg} alt="Notflix Logo"/>
+            <div className={classes.searchCont}>
+              <Popper className={classes[helpId]} open={helpOpen} anchorEl={anchorEl}>
+                {/* <div className={classes.helpWindow}> */}
+                  <Paper className={classes.paperHelp} variant="outlined" backgroundColor="white" elevation={23}>
+                    <CloseIcon onClick={() => setAnchorEl(false)} className={classes.closeIcon} />
+                    <Typography paragraph={true}><span className={classes.helpTitle}>Switch On - Full Mode:</span> Loads all movie details allowing scores to be shown on front of cards.</Typography>
+                    <Typography paragraph={true}><span className={classes.helpTitle}>Switch Off - Fast Mode:</span> Loads images, titles and years of movies.</Typography>
+                    <Typography>Click on a movie card to see more detailed information (including scores).</Typography>
+                  </Paper>
+                {/* </div> */}
+              </Popper>
+                <HelpIcon className={classes.helpIcon} onClick={toggleHelp} />
+                <Switch 
+                  className={classes.displaySwitch}
+                  onChange={() => changeDetailMode()} 
+                  checked={detailMode}/>
+              <div className={classes.search}>
+                <span className={classes.searchIcon}>
+                  <SearchIcon />
+                </span>
+                <InputBase
+                  placeholder="Search…"
+                  classes={{
+                    root: classes.inputRoot,
+                    input: classes.inputInput,
+                  }}
+                  value={searchTxt}
+                  inputProps={{ 'aria-label': 'search' }}
+                  onKeyPress={e => e.key === "Enter" ? getMovieName(searchTxt) : null}
+                  onInput={e =>  setSearchTxt(e.target.value)}
+                />
+              </div>
+              <Button id="searchButton" className={classes.button}
+                onClick={() => getMovieName(searchTxt)} 
+                variant="contained" color="secondary">
+                  Go!
+              </Button>
             </div>
-            <Button id="searchButton" className={classes.button}
-              onClick={() => getMovieName(searchTxt)} 
-              variant="contained" color="secondary">
-                Go!
-            </Button>
-          </div>
-        </Toolbar>
-      </AppBar>
-
+          </Toolbar>
+        </AppBar>
+      {/* </SwipeableDrawer> */}
       {/* </nav> */}
     </>
   );

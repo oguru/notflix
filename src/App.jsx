@@ -9,7 +9,7 @@ import BottomScrollListener from 'react-bottom-scroll-listener';
 function App() {
 
   const [searchTxt, setSearchTxt] = useState("");
-  const [movieName, setMovieName] = useState();
+  const [movieName, setMovieName] = useState("harry");
   const [page, setPage] = useState(1);
   const [movieResults, setMovieResults] = useState([]);
   const [movieDetails, setMovieDetails] = useState([]);
@@ -17,6 +17,7 @@ function App() {
   const [posterImages, setImage] = useState([]);
   const [modalState, setModalState] = useState(false);
   const [modalData, storeModal] = useState("");
+  // const [plotLength, setPlotLength] = useState()
   
   // const [dashMessage, setDashMessage] = useState("Type a movie name in the search bar to get started.")
 
@@ -25,12 +26,12 @@ function App() {
   const useStyles = makeStyles((theme) => ({
     app: {
       backgroundColor: theme.palette.background.default,
-      width: "100vw",
+      maxWidth: "100vw",
       minHeight: "100vh",
       height: "100%"
     },
     dashboard: {
-      padding: "0px 16px"
+      padding: `0px ${theme.spacing(2)}px`
     }
   }))
 
@@ -85,7 +86,7 @@ function App() {
 
   const fetchData = async (input, type) => {
     const parameter = type === "id" ? "i" : "s"
-    await fetch(`https://www.omdbapi.com/?apikey=a6790f0e&${parameter}=${input}&page=${page}`) 
+    await fetch(`https://www.omdbapi.com/?apikey=a6790f0e&${parameter}=${input}&page=${page}&plot=full`) 
     .then (result => result.json())
     .then(result => setDetails(result, type))
     .catch(err => console.log(err))

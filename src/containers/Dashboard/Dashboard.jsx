@@ -29,14 +29,11 @@ const Dashboard = (props) => {
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [movieResults]);
 
-    console.log(cardHeight);
-    
-    
     const useStyles = makeStyles((theme) => ({
       gridCard: {
         // width: "100px",
         height: `${cardHeight}px`,
-        padding: "12px",
+        padding: theme.spacing(1.5),
         display: "flex",
         alignItems: "center",
         justifyContent: "center"
@@ -49,18 +46,26 @@ const Dashboard = (props) => {
 
   const classes = useStyles();
 
-  const showModal = movie => {
-    setModalState(true)
-    if (detailMode) {
-        storeModal(movie)
-      }
+  const showModal = (movie, hoverLink) => {
+    console.log(hoverLink);
+    
+    if (hoverLink) {
+      return null
+    }
     else {
-        fetchData(movie.imdbID, "id")
-      }
+      setModalState(true)
+      if (detailMode) {
+          storeModal(movie)
+        }
+      else {
+        storeModal("")
+          fetchData(movie.imdbID, "id")
+        }
+    }
   }
 
   const closeModal = () => {
-    storeModal("")
+    // storeModal("")
     setModalState(false)
   }
   
@@ -80,8 +85,9 @@ const Dashboard = (props) => {
       return detailType.map((movie, index) => {
         return (
           <Grow in={true} appear={true}>
-            <Grid key={movie.imdbID} onClick={() => showModal(movie)} className={classes.gridCard} item xs={12} sm={6} md={4} lg={3} xl={2} >
-              <MovieCard movie={movie} movieImages={movieImages} index={index} detailMode={detailMode} imgCount={imgCount} setImgCount={setImgCount}/>
+            <Grid key={movie.imdbID} 
+            className={classes.gridCard} item xs={12} sm={6} md={4} lg={3} xl={2} >
+              <MovieCard showModal={showModal} movie={movie} movieImages={movieImages} index={index} detailMode={detailMode} imgCount={imgCount} setImgCount={setImgCount}/>
             </Grid>
           </Grow>
         )
@@ -89,6 +95,10 @@ const Dashboard = (props) => {
       )
     }
   }
+
+  // const modalCard = () => {
+  //   modalState ? <ModalCard movie={modalData} detailMode={detailMode} /> : "";
+  // } 
 
   return (
     <>
@@ -103,7 +113,7 @@ const Dashboard = (props) => {
           timeout: 500,
         }}>
           <Fade in={modalState}>
-            <ModalCard movie={modalData} />
+            <ModalCard closeModal={closeModal} movie={modalData} detailMode={detailMode} />
           </Fade>
         </Modal>
       {/* </div> */}
