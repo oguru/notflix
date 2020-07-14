@@ -29,12 +29,16 @@ const ModalCard = (props) => {
 
     closeIcon: {
       position: "absolute",
-      right: theme.spacing(2),
-      top: theme.spacing(2),
+      right: theme.spacing(0.75),
+      top: theme.spacing(0.75),
       cursor: "pointer",
       transition: "0.2s",
       "&:hover": {
         transform: "scale(1.1)"
+      },
+      [theme.breakpoints.up('md')]: {
+        right: theme.spacing(2),
+        top: theme.spacing(2),
       }
     },
 
@@ -164,7 +168,7 @@ const ModalCard = (props) => {
     },
     
     textSpacing: {
-      margin: theme.spacing(0.75)
+      margin: theme.spacing(1)
     },
 
     title: {
@@ -200,6 +204,10 @@ const ModalCard = (props) => {
     poster = movie.Poster;
   }
 
+  const changeImg = () => {
+
+  }
+
   const getRating = (rating) => {
     const siteName = rating.Source;
     let siteIcon;
@@ -224,7 +232,7 @@ const ModalCard = (props) => {
     return (
       <div className={classes.rating}>
         <a href={siteLink} rel={"noopener noreferrer"} target={"_blank"}>
-          <img className={classes.ratingIcon} src={siteIcon} alt={siteName}/>
+          <img className={classes.ratingIcon} onError={changeImg()} src={siteIcon} alt={siteName}/>
         </a>
         <Typography className={`${classes.textSpacing} ${classes.scoreText}`} component="p">{rating.Value}</Typography>
     </div>

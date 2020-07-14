@@ -28,6 +28,7 @@ function App() {
       backgroundColor: theme.palette.background.default,
       maxWidth: "100vw",
       minHeight: "100vh",
+      paddingBottom: theme.spacing(2),
       height: "100%"
     },
     dashboard: {
