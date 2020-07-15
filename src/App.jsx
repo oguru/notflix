@@ -2,22 +2,20 @@ import React, { useState, useEffect } from "react";
 import './App.module.scss';
 import Dashboard from "./containers/Dashboard"
 import Navbar from "./components/Navbar"
-import { createMuiTheme, ThemeProvider, makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import BottomScrollListener from 'react-bottom-scroll-listener';
 
 
 function App() {
 
   const [searchTxt, setSearchTxt] = useState("");
-  const [movieName, setMovieName] = useState("harry");
+  const [movieName, setMovieName] = useState("");
   const [page, setPage] = useState(1);
   const [movieResults, setMovieResults] = useState([]);
   const [movieDetails, setMovieDetails] = useState([]);
   const [detailMode, setDetailMode] = useState(true);
   const [posterImages, setImage] = useState([]);
-  const [modalState, setModalState] = useState(false);
   const [modalData, storeModal] = useState("");
-  // const [plotLength, setPlotLength] = useState()
   
   // const [dashMessage, setDashMessage] = useState("Type a movie name in the search bar to get started.")
 
@@ -48,6 +46,8 @@ function App() {
     }
 // eslint-disable-next-line react-hooks/exhaustive-deps
 }, [movieName, detailMode, page]);
+
+const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
 
   const reInitSearch = () => {
     setMovieName()
@@ -112,16 +112,15 @@ function App() {
         <section className={classes.dashboard}>
           <Dashboard 
             detailMode={detailMode} 
-            movieResults={movieResults} 
-            setMovieDetails={setMovieDetails} 
-            movieDetails={movieDetails} 
             fetchData={fetchData} 
-            setImage={setImage} 
+            movieResults={movieResults} 
+            modalData={modalData}
+            movieDetails={movieDetails} 
             posterImages={posterImages} 
-            modalState={modalState} 
-            setModalState={setModalState}
+            scrollbarWidth={scrollbarWidth} 
+            setImage={setImage} 
+            setMovieDetails={setMovieDetails} 
             storeModal={storeModal}
-            modalData={modalData} 
             />
         </section>
       <BottomScrollListener onBottom={() => addPage()} />

@@ -1,21 +1,58 @@
 import React, { useState, useEffect } from "react";
-import styles from "./MovieCard.module.scss";
-import {Grid, Card, Typography, Grow, Box} from '@material-ui/core';
+import {Backdrop, Fade, Card, Modal, Typography, Box} from '@material-ui/core';
+import ModalCard from "../ModalCard";
 import { makeStyles } from '@material-ui/core/styles';
-import useImage from 'use-image';
 import posterPlaceholder from "../../assets/poster-placeholder.png"
 import imdbIcon from "../../assets/imdb-logo.png"
 import metaIcon from "../../assets/metacritic-icon.png"
 import rtIcon from "../../assets/tomato-svg-logo-2.png"
 
 const MovieCard = (props) => {
-  const { movie, detailMode, showModal, index, setImgCount, imgCount, movieImages } = props;
+  const { movie, detailMode, modalData, storeModal, fetchData, scrollbarWidth } = props;
 
+  const [modalState, setModalState] = useState(false);
   const [hovered, setHovered] = useState(false)
-  const [hoverLink, setHoverLink] = useState(false)
+  const [poster, setPoster] = useState("")
   
+  useEffect(() => {
+    getPoster()
+// eslint-disable-next-line react-hooks/exhaustive-deps
+}, [movie])
+
   const useStyles = makeStyles((theme) => ({
     
+    cardBottom: {
+      height: "130px",
+      display: "flex",
+      flexDirection: "column",
+      justifyContent: "space-between"
+    },
+
+    cardExpandOn: {
+      transform: "scale(1.075)",
+      transition: "0.2s ease-in-out"
+    },
+    
+    cardExpandOff: {
+      transform: "scale(1)",
+      transition: "0.2s ease-in-out"
+    },
+
+    cardImg: {
+      objectFit: "contain",
+      maxHeight: "300px",
+      minWidth: "250px",
+      maxWidth: "260px",
+      borderRadius: theme.spacing(0.5)
+    },
+    
+    flexColumn: {
+      display: "flex",
+      flexDirection: "column",
+      justifyContent: "flex-start",
+      alignItems: "center"
+    },
+
     movieCard: {
       width: "300px",
       height: "100%",
@@ -25,62 +62,16 @@ const MovieCard = (props) => {
       justifyContent: "space-between",
       textAlign: "center",
       },
-      
-    flexColumn: {
-      display: "flex",
-      flexDirection: "column",
-      justifyContent: "flex-start",
-      alignItems: "center"
-    },
     
     noPosterStyle: {
       position: "absolute",
       top: theme.spacing(5),
       maxWidth: "60%"
     },
-    
-    textSpacing: {
-      margin: "5px"
-    },
-    
-    cardImg: {
-      objectFit: "contain",
-      maxHeight: "300px",
-      minWidth: "250px",
-      maxWidth: "260px",
-      // marginBottom: "10px",
-      borderRadius: theme.spacing(0.5)
-    },
-    
-    title: {
-      fontSize: "16px",
-      height: "75px",
-      // marginBottom: "15px",
-      display: "flex", 
-      justifyContent: "center", 
-      alignItems: "center"
-    },
-
-    cardBottom: {
-      height: "130px",
-      display: "flex",
-      flexDirection: "column",
-      justifyContent: "space-between"
-    },
-    
-    scores: {
-      display: "flex", 
-      justifyContent: "space-around", 
-      alignItems: "center"
-    },
-
-    scoreText: {
-      fontSize: "14px"
-    },
-    
+        
     rating: {
-      height: "55px",
-      width: "40px",
+      height: theme.spacing(6),
+      width: theme.spacing(5),
       display: "flex",
       flexDirection: "column",
       justifyContent: "space-between",
@@ -97,38 +88,72 @@ const MovieCard = (props) => {
       "&:hover": {
         transform: "translate(0, -3px)",
         filter: "drop-shadow(0 3px 3px grey)"
-        // transform: "translate(0, 5px)"
+      }
+    },   
+
+    scores: {
+      display: "flex", 
+      justifyContent: "space-around", 
+      alignItems: "center"
+    },
+
+    scoresModal: {
+      margin: `${theme.spacing(1.5)}px 0`,
+      [theme.breakpoints.up('md')]: {
+        justifyContent: "space-evenly",
+        margin: `0 ${theme.spacing(5)}px`
       }
     },
-    
-    cardExpandOn: {
-      transform: "scale(1.075)",
-      transition: "0.2s ease-in-out"
+
+    scoreText: {
+      fontSize: "14px"
+    },
+
+    textSpacing: {
+      margin: theme.spacing(1)
     },
     
-    cardExpandOff: {
-      transform: "scale(1)",
-      transition: "0.2s ease-in-out"
-    }
+    title: {
+      fontSize: "16px",
+      height: "75px",
+      display: "flex", 
+      justifyContent: "center", 
+      alignItems: "center"
+    },
   }));
   
   const classes = useStyles();
-  
-  let poster, noPosterTxt = ""; 
-  
-  if (movie.Poster === "N/A") {
-    poster = posterPlaceholder;
-    noPosterTxt = 
-      <>
-        <h3>{movie.Title}</h3>
-        <p>(No poster)</p>
-      </>
-  } 
-  else {
-    poster = movie.Poster;
+
+  const showModal = (movie) => {
+    setModalState(true)
+    if (detailMode) {
+        storeModal(movie)
+      }
+    else {
+      storeModal("")
+        fetchData(movie.imdbID, "id")
+      }
+  }
+
+  const closeModal = () => {
+    setModalState(false)
   }
   
-  // const movieRating = () => detailMode ? movie.imdbRating : "";
+  let noPosterTxt = ""; 
+  
+  const getPoster = () => {
+    if (movie.Poster === "N/A") {
+      setPoster(posterPlaceholder);
+      noPosterTxt = 
+        <>
+          <h3>{movie.Title}</h3>
+          <p>(No poster)</p>
+        </>
+    } 
+    else {
+      setPoster(movie.Poster);
+    }
+  }
 
   const getRating = rating => {
     const siteName = rating.Source;
@@ -152,25 +177,32 @@ const MovieCard = (props) => {
     }
 
     return (
-      <div onMouseEnter={() => setHoverLink(true)} onMouseOut={() => setHoverLink(false)} className={classes.rating}>
-        <a href={siteLink} rel={"noopener noreferrer"} target={"_blank"}>
+      <div className={`${classes.rating} ${classes.ratingModal}`}>
+        <a href={siteLink} onClick={(event) => event.stopPropagation()} rel={"noopener noreferrer"} target={"_blank"}>
           <img className={classes.ratingIcon} src={siteIcon} alt={siteName}/>
         </a>
-        <Typography className={`${classes.textSpacing} ${classes.scoreText}`} component="p">{rating.Value}</Typography>
+        <Typography className={classes.scoreText} component="p">{rating.Value}</Typography>
     </div>
     )
-
   }
 
-  const movieRatings = () => {
-    if (detailMode) {
+  const movieRatings = (movie, source) => {
+    if (movie) {
+
+      const ratingClass = source === "modal" ? `${classes.scores} ${classes.scoresModal}` : `${classes.scores}`;
+
       return (
-        <section className={classes.scores}>
+        <section className={ratingClass}>
           {movie.Ratings.map(rating => getRating(rating))}
         </section>
       )
     }
-    return ""
+  }
+
+  const movieRatingsCheck = () => {
+    if (detailMode) {
+      return movieRatings(movie);
+    }
   }
 
   const cardExpand = ((hovered && detailMode) ? "cardExpandOn" : "cardExpandOff");
@@ -179,7 +211,7 @@ const MovieCard = (props) => {
     <>
       <Card raised={hovered} 
         onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)} 
-        onClick={() => showModal(movie, hoverLink)}
+        onClick={() => showModal(movie)}
         boxShadow={1} className={`${classes.movieCard} ${classes[cardExpand]}`}>
           <div className={classes.flexColumn}>
             <div className={`${classes.noPosterStyle} ${classes.flexColumn}`}>
@@ -193,11 +225,21 @@ const MovieCard = (props) => {
                 {`${movie.Title} (${movie.Year})`}
               </Box>
             </Typography>
-            {/* <Typography className={classes.textSpacing} component="p">{movie.Year}</Typography> */}
-            {movieRatings()}
+            {movieRatingsCheck()}
           </div>
-          {/* <p>{movieDetails[imdbId]}</p> */}
         </Card>
+        <Modal open={modalState}
+        className={classes.modal}
+        onClose={closeModal}
+        closeAfterTransition
+        BackdropComponent={Backdrop}
+        BackdropProps={{
+          timeout: 500,
+        }}>
+          <Fade in={modalState}>
+            <ModalCard closeModal={closeModal} movie={modalData} detailMode={detailMode} movieRatings={movieRatings} movieCardStyles={classes} poster={poster} scrollbarWidth={scrollbarWidth} />
+          </Fade>
+        </Modal>
     </>
   );
 };
