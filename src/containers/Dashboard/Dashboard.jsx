@@ -30,7 +30,6 @@ const Dashboard = (props) => {
     windowWidth: PropTypes.number
   };
 
-  const [imgCount, setImgCount] = useState(0);
   const [cardHeight, setCardHeight] = useState(500);
 
   useEffect(() => {
@@ -39,7 +38,9 @@ const Dashboard = (props) => {
       results.forEach(result => fetchData(result.imdbID, "id"));
     };
 
-    if (movieResults.length > 0 && detailMode && movieResults !== "error") {
+    if (movieResults.length > 0
+    && detailMode
+    && movieResults !== "error") {
       getMovieDetails(movieResults);
     }
 
@@ -82,12 +83,12 @@ const Dashboard = (props) => {
   };
 
   const createMovieCards = () => {
-    if (movieResults.length > 0 && movieResults !== "error") {
-      const resultsCopy = detailMode ? [...movieDetails] : [...movieResults];
-
+    if (movieResults.length > 0
+      && movieResults !== "error") {
+      const resultsCopy = detailMode ?
+        [...movieDetails] : [...movieResults];
       const movieImages = resultsCopy.map((movie) => {
         const moviePoster = new Image();
-
         moviePoster.src = movie.Poster;
 
         return moviePoster;
@@ -95,12 +96,22 @@ const Dashboard = (props) => {
 
       const detailType = detailMode ? movieDetails : movieResults;
 
-      return detailType.map((movie, index) => {
+      return detailType.map((movie) => {
         return (
           <Grow key={movie.imdbID} in={true}>
             <Grid
-              className={classes.gridCard} item xs={12} sm={6} md={4} lg={3} xl={2} >
-              <MovieCard fetchData={fetchData} movie={movie} modalData={modalData} storeModal={storeModal} movieImages={movieImages} index={index} detailMode={detailMode} imgCount={imgCount} setImgCount={setImgCount} scrollbarWidth={scrollbarWidth}/>
+              className={classes.gridCard}
+              item xs={12} sm={6} md={4} lg={3} xl={2}
+            >
+              <MovieCard
+                detailMode={detailMode}
+                fetchData={fetchData}
+                movie={movie}
+                movieImages={movieImages}
+                modalData={modalData}
+                scrollbarWidth={scrollbarWidth}
+                storeModal={storeModal}
+              />
             </Grid>
           </Grow>
         );

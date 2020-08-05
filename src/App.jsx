@@ -7,22 +7,21 @@ import Navbar from "./components/Navbar";
 import {makeStyles} from "@material-ui/core/styles";
 
 const App = () => {
-  const [searchOpen, toggleSearch] = useState(false);
-  const [initState, changeInit] = useState(true);
-  const [searchTxt, setSearchTxt] = useState("");
-  const [movieName, setMovieName] = useState("");
-  const [page, setPage] = useState(1);
-  const [movieResults, setMovieResults] = useState([]);
-  const [movieDetails, setMovieDetails] = useState([]);
   const [detailMode, setDetailMode] = useState(true);
-  const [posterImages, setImage] = useState([]);
+  const [initState, changeInit] = useState(true);
   const [modalData, storeModal] = useState({});
-  const [windowWidth, setWindowWidth] = useState();
+  const [movieDetails, setMovieDetails] = useState([]);
+  const [movieName, setMovieName] = useState("");
+  const [movieResults, setMovieResults] = useState([]);
+  const [page, setPage] = useState(1);
   const [scrollDir, setScrollDir] = useState("up");
   const [snackbarState, toggleSnackbar] = useState({
     detail: false,
     fast: false
   });
+  const [searchOpen, toggleSearch] = useState(false);
+  const [searchTxt, setSearchTxt] = useState("");
+  const [windowWidth, setWindowWidth] = useState();
 
   const useStyles = makeStyles((theme) => ({
     app: {
@@ -41,18 +40,19 @@ const App = () => {
     snackBar: {bottom: "16px"}
   }));
 
-  const classes = useStyles();
-
   const snackbarBackground = detailMode ?
     "rgba(229, 9, 20, 1)" : "rgba(43, 89, 195, 1)";
 
-  const snackbarStyles = makeStyles({root: {
-    backgroundColor: snackbarBackground,
-    color: "white",
-    justifyContent: "center",
-    maxWidth: "300px",
-    minWidth: "200px"
-  }}, {name: "MuiSnackbarContent"});
+  const snackbarStyles = makeStyles({
+    root: {
+      backgroundColor: snackbarBackground,
+      color: "white",
+      justifyContent: "center",
+      minWidth: "200px"
+    }
+  }, {name: "MuiSnackbarContent"});
+
+  const classes = useStyles();
 
   snackbarStyles();
 
@@ -71,6 +71,7 @@ const App = () => {
 
     const updateScrollDir = () => {
       const scrollY = window.pageYOffset;
+
       if (Math.abs(scrollY - lastScrollY) < threshold) {
         ticking = false;
 
@@ -90,15 +91,18 @@ const App = () => {
     };
 
     window.addEventListener("scroll", onScroll);
+
   }, []);
 
   useEffect(() => {
     const getWidth = () => setWindowWidth(window.innerWidth);
+
     window.addEventListener("resize", getWidth);
     getWidth();
   }, []);
 
-  const scrollbarWidth = windowWidth - document.documentElement.clientWidth;
+  const scrollbarWidth
+    = windowWidth - document.documentElement.clientWidth;
 
   const reInitSearch = () => {
     setMovieName();
@@ -128,6 +132,7 @@ const App = () => {
 
     reInitSearch();
     setMovieName(name);
+
     if (searchOpen) {
       toggleSearch(false);
     }
@@ -136,7 +141,7 @@ const App = () => {
   const setDetails = (result, type) => {
     if (type === "id") {
       if (detailMode) {
-        setMovieDetails(() => [...movieDetails, result]);
+        setMovieDetails(currentMovDetails => [...currentMovDetails, result]);
       } else {
         storeModal(result);
       }
@@ -153,7 +158,6 @@ const App = () => {
 
   const fetchData = (input, type) => {
     const parameter = type === "id" ? "i" : "s";
-
     fetch(`https://www.omdbapi.com/?apikey=a6790f0e&${parameter}=${input}&page=${page}&plot=full`)
       .then(result => result.json())
       .then(result => setDetails(result, type))
@@ -168,76 +172,66 @@ const App = () => {
     }
   };
 
-
-  /*
-   * const handleClickVariant = (variant) => () => {
-   *   // variant could be success, error, warning, info, or default
-   *   enqueueSnackbar('This is a success message!', { variant });
-   * };
-   */
-
   const snackbar = detailMode ?
     {
-      mode: snackbarState.detail,
+      key: "detail",
       message: "Detail mode enabled",
-      key: "detail"
+      mode: snackbarState.detail
     } : {
-      mode: snackbarState.fast,
+      key: "fast",
       message: "Fast mode enabled",
-      key: "fast"
+      mode: snackbarState.fast
     };
 
   return (
     <>
-      <section className={classes.app} onClick={() => searchOpen ? toggleSearch(false) : ""}>
+      <section
+        className={classes.app}
+        onClick={() => searchOpen ? toggleSearch(false) : ""}>
         <Navbar
-          searchOpen={searchOpen}
-          toggleSearch={toggleSearch}
-          scrollDir={scrollDir}
-          getMovieName={getMovieName}
           changeDetailMode={changeDetailMode}
           detailMode={detailMode}
+          getMovieName={getMovieName}
+          scrollDir={scrollDir}
+          searchOpen={searchOpen}
           searchTxt={searchTxt}
           setSearchTxt={setSearchTxt}
+          toggleSearch={toggleSearch}
           windowWidth={windowWidth} />
         <section className={classes.dashboard}>
           <Dashboard
-            initState={initState}
-            movieName={Boolean(movieName)}
             detailMode={detailMode}
             fetchData={fetchData}
-            movieResults={movieResults}
+            initState={initState}
             modalData={modalData}
             movieDetails={movieDetails}
-            posterImages={posterImages}
+            movieName={Boolean(movieName)}
+            movieResults={movieResults}
             scrollbarWidth={scrollbarWidth}
-            setImage={setImage}
             setMovieDetails={setMovieDetails}
             storeModal={storeModal}
             windowWidth={windowWidth}
           />
         </section>
-        <BottomScrollListener offset={250} onBottom={() => addPage()} />
+        <BottomScrollListener
+          offset={250}
+          onBottom={() => addPage()}
+        />
       </section>
-      {/* <Snackbar
-        open={snackbarState.detail}
-        onClose={() => toggleSnackbar({...snackbarState, detail: false})}
-        // TransitionComponent={slide}
-        autoHideDuration={100}
-        message="Detail mode enabled"
-        key={"detail"}
-      /> */}
       <Snackbar
-        open={snackbar.mode}
-        onClose={() => toggleSnackbar({detail: false,
-          fast: false})}
         TransitionComponent={Slide}
         autoHideDuration={1500}
+        classes= {{
+          content: classes.snackBarContent,
+          root: classes.snackBar
+        }}
         message={snackbar.message}
         key={snackbar.key}
-        classes={{root: classes.snackBar,
-          content: classes.snackBarContent}}
-        // classes={`${{root: classes.snackBar}} ${classes.snackBarContent}`}
+        onClose={() => toggleSnackbar({
+          detail: false,
+          fast: false
+        })}
+        open={snackbar.mode}
       />
     </>
   );

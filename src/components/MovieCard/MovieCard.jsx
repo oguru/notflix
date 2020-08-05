@@ -33,7 +33,6 @@ const MovieCard = (props) => {
 
   useEffect(() => {
     getPoster();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [movie]);
 
   const useStyles = makeStyles((theme) => ({
@@ -160,8 +159,8 @@ const MovieCard = (props) => {
   const getPoster = () => {
     if (movie.Poster === "N/A") {
       setPoster(posterPlaceholder);
-      noPosterTxt =
-        <>
+      noPosterTxt
+        = <>
           <h3>{movie.Title}</h3>
           <p>(No poster)</p>
         </>;

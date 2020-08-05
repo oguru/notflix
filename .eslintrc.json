@@ -101,7 +101,7 @@
         "no-mixed-spaces-and-tabs": 2,
         "no-multi-spaces": 2,
         "no-multi-str": 2,
-        "no-multiple-empty-lines": 2,
+        "no-multiple-empty-lines": [2, {"max": 1}],
         "no-new": 2,
         "no-new-func": 2,
         "no-new-object": 2,
@@ -162,11 +162,13 @@
         "object-property-newline": 2,
         "object-shorthand": 2,
         "operator-assignment": 2,
-        "operator-linebreak": [2, "after"],
+        "operator-linebreak": [2, "before", { "overrides": { "?": "after", ":": "after" } }],
         "padding-line-between-statements": [
             "error",
             { "blankLine": "always", "prev": "block", "next": "*" },
+            { "blankLine": "always", "prev": "*", "next": "block" },
             { "blankLine": "always", "prev": "block-like", "next": "*" },
+            { "blankLine": "always", "prev": "*", "next": "block-like" },
             { "blankLine": "always", "prev": "*", "next": "export" },
             { "blankLine": "always", "prev": "return", "next": "*" }
         ],    
