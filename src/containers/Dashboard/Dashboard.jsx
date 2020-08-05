@@ -1,83 +1,121 @@
-import React, { useState, useEffect } from "react";
-import MovieCard from "../../components/MovieCard"
-import {Grid, Grow} from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import {Grid, Grow} from "@material-ui/core";
+import React, {useEffect, useState} from "react";
+import MovieCard from "../../components/MovieCard";
+import PropTypes from "prop-types";
+import {makeStyles} from "@material-ui/core/styles";
 
 const Dashboard = (props) => {
-  
-  const {movieResults, fetchData, movieDetails, detailMode, storeModal, modalData, scrollbarWidth} = props;
-    
-  const [imgCount, setImgCount] = useState(0)
-  const [cardHeight, setCardHeight] = useState(500)
-  
+
+  const {
+    detailMode,
+    fetchData,
+    initState,
+    modalData,
+    movieDetails,
+    movieResults,
+    scrollbarWidth,
+    storeModal,
+    windowWidth
+  } = props;
+
+  Dashboard.propTypes = {
+    detailMode: PropTypes.bool,
+    fetchData: PropTypes.func,
+    initState: PropTypes.bool,
+    modalData: PropTypes.object,
+    movieDetails: PropTypes.array,
+    movieResults: PropTypes.array,
+    scrollbarWidth: PropTypes.number,
+    storeModal: PropTypes.func,
+    windowWidth: PropTypes.number
+  };
+
+  const [imgCount, setImgCount] = useState(0);
+  const [cardHeight, setCardHeight] = useState(500);
+
   useEffect(() => {
-    if (movieResults.length > 0 && detailMode) {
+
+    const getMovieDetails = results => {
+      results.forEach(result => fetchData(result.imdbID, "id"));
+    };
+
+    if (movieResults.length > 0 && detailMode && movieResults !== "error") {
       getMovieDetails(movieResults);
     }
+
     if (detailMode) {
-      setCardHeight(500)
+      setCardHeight(500);
+    } else {
+      setCardHeight(450);
     }
-    else {
-      setCardHeight(450)
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [movieResults]);
 
   const useStyles = makeStyles((theme) => ({
     gridCard: {
-      height: `${cardHeight}px`,
-      padding: theme.spacing(1.5),
-      display: "flex",
       alignItems: "center",
-      justifyContent: "center"
+      display: "flex",
+      height: `${cardHeight}px`,
+      justifyContent: "center",
+      padding: theme.spacing(1.5)
     },
-
     initTxt: {
       color: theme.palette.text.primary,
       fontStyle: "italic",
       margin: theme.spacing(1)
     }
-  }))
+  }));
 
   const classes = useStyles();
 
-  const getMovieDetails = results => {
-    results.forEach(result => fetchData(result.imdbID, "id"));
-  };      
-  
-  const createMovieCards = () => {  
-    if (movieResults.length > 0) {
+  const dashText = () => {
+    if (movieResults === "error") {
+      return "No results found. Please ensure spelling and spacing is correct.";
+    } else if (initState) {
+      if (windowWidth < 600) {
+        return "Click NavBar to reveal the search bar, then type a movie name in the search bar to get started...";
+      }
+
+      return "Type a movie name in the search bar to get started...";
+    }
+
+    return "";
+  };
+
+  const createMovieCards = () => {
+    if (movieResults.length > 0 && movieResults !== "error") {
       const resultsCopy = detailMode ? [...movieDetails] : [...movieResults];
+
       const movieImages = resultsCopy.map((movie) => {
-         const moviePoster = new Image();
-         moviePoster.src = movie.Poster;
-         return moviePoster;
-      })
+        const moviePoster = new Image();
+
+        moviePoster.src = movie.Poster;
+
+        return moviePoster;
+      });
 
       const detailType = detailMode ? movieDetails : movieResults;
 
       return detailType.map((movie, index) => {
         return (
-          <Grow in={true}>
-            <Grid  key={movie.imdbID} 
-            className={classes.gridCard} item xs={12} sm={6} md={4} lg={3} xl={2} >
+          <Grow key={movie.imdbID} in={true}>
+            <Grid
+              className={classes.gridCard} item xs={12} sm={6} md={4} lg={3} xl={2} >
               <MovieCard fetchData={fetchData} movie={movie} modalData={modalData} storeModal={storeModal} movieImages={movieImages} index={index} detailMode={detailMode} imgCount={imgCount} setImgCount={setImgCount} scrollbarWidth={scrollbarWidth}/>
             </Grid>
           </Grow>
-        )
-      }
-      )
+        );
+      });
     }
 
     return (
-      <p className={classes.initTxt}>Type a movie name in the search bar to get started...</p>
-    )
-  }
+      <p className={classes.initTxt}>{dashText()}</p>
+    );
+  };
 
   return (
     <>
       <Grid container>
-          {createMovieCards()}
+        {createMovieCards()}
       </Grid>
     </>
   );

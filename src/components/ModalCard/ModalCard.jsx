@@ -40,6 +40,7 @@ const ModalCard = (props) => {
     },
 
     modalBody: {
+      width: "100%",
       [theme.breakpoints.up('md')]: {
         height: "100%",
         paddingLeft: theme.spacing(1),
@@ -106,9 +107,12 @@ const ModalCard = (props) => {
     },
 
     textHead: {
+      fontSize: "14px",
+      fontWeight: "bold",
+      // width: "100%",
       lineHeight: theme.spacing(2) + "px",
-      textDecoration: "underline",
-      marginBottom: theme.spacing(1.5)
+      // textDecoration: "underline",
+      marginBottom: theme.spacing(1.5),
     },
 
     title: {
