@@ -36,7 +36,7 @@
         "for-direction": 2,
         "getter-return": 2,
         "implicit-arrow-linebreak": 2,
-        "indent": ["error", 2, {"SwitchCase": 1}],
+        "indent": ["error", 3, {"SwitchCase": 1}],
         "jsx-quotes": 2,
         "key-spacing": 2,
         "keyword-spacing": 2,
@@ -162,7 +162,7 @@
         "object-property-newline": 2,
         "object-shorthand": 2,
         "operator-assignment": 2,
-        "operator-linebreak": [2, "before", { "overrides": { "?": "after", ":": "after" } }],
+        "operator-linebreak": [2, "before", { "overrides": { "?": "after", "=": "after", ":": "after" } }],
         "padding-line-between-statements": [
             "error",
             { "blankLine": "always", "prev": "block", "next": "*" },
