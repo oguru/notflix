@@ -62,7 +62,7 @@ const Dashboard = (props) => {
          return "No results found. Please ensure spelling and spacing is correct.";
       } else if (searchTxt.length === 0) {
          if (windowWidth < 600) {
-            return "Click NavBar to reveal the search bar, then type a movie name in the search bar to get started...";
+            return "Click the top bar to reveal the search bar, then type in a movie name to get started...";
          }
 
          return "Type a movie name in the search bar to get started...";

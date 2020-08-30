@@ -198,7 +198,7 @@ const MovieCard = (props) => {
       );
    };
 
-   const movieRatings = (movie, source) => {
+   const movieRatings = (source) => {
       if (movie) {
          const ratingClass = source === "modal" ? `${classes.scores} ${classes.scoresModal}` : `${classes.scores}`;
 
