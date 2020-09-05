@@ -224,9 +224,6 @@ const MovieCard = (props) => {
 
    const cardExpand = hovered && detailMode ? "cardExpandOn" : "cardExpandOff";
 
-   console.log(typeof movieRatings);
-   // console.log(typeof poster);
-
    return (
       <>
          <Card raised={hovered}
