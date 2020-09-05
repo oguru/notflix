@@ -82,20 +82,20 @@ const Navbar = (props) => {
       },
 
       inputInput: {
-         "&:focus": {width: "14ch"},
+         "&:focus": {width: "125px"},
          padding: theme.spacing(
             1, 1, 1, 0
          ),
-         paddingLeft: `calc(1em + ${theme.spacing(4)}px)`,
+         paddingLeft: `calc(${theme.spacing(6)}px)`,
          transition: theme.transitions.create("width"),
-         width: "10ch",
+         width: "85px",
          [theme.breakpoints.up("sm")]: {
-            "&:focus": {width: "16ch"},
-            width: "12ch"
+            "&:focus": {width: "150px"},
+            width: "100px"
          },
          [theme.breakpoints.up("md")]: {
-            "&:focus": {width: "24ch"},
-            width: "16ch"
+            "&:focus": {width: "225px"},
+            width: "150px"
          }
       },
 
@@ -171,9 +171,7 @@ const Navbar = (props) => {
          flexWrap: "wrap",
          height: theme.spacing(8),
          justifyContent: "space-between",
-         // justifyContent: "flex-end",
          padding: theme.spacing(0, 2),
-         // paddingRight: theme.spacing(2),
          width: "100%",
          [theme.breakpoints.up("sm")]: {
             paddingRight: "0",

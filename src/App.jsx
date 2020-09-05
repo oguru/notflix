@@ -23,6 +23,8 @@ const App = () => {
    const [searchTxt, setSearchTxt] = useState("");
    const [windowWidth, setWindowWidth] = useState();
 
+   const [fetchCount, setFetchCount] = useState(0);
+
    const useStyles = makeStyles((theme) => ({
       app: {
          backgroundColor: theme.palette.background.default,
@@ -32,12 +34,12 @@ const App = () => {
          paddingBottom: theme.spacing(2)
       },
       dashboard: {
-         padding: `0px ${theme.spacing(2)}px`,
+         padding: `0 ${theme.spacing(2)}px`,
          paddingTop: theme.spacing(10)
       },
       sBarDetailMode: {backgroundColor: theme.palette.secondary.main},
       sBarFastMode: {backgroundColor: theme.palette.secondary.dark},
-      snackBar: {bottom: "16px"}
+      snackBar: {bottom: theme.spacing(2)}
    }));
 
    const snackbarBackground = detailMode ?
@@ -116,8 +118,8 @@ const App = () => {
       getWidth();
    }, []);
 
-   const scrollbarWidth
-    = windowWidth - document.documentElement.clientWidth;
+   const scrollbarWidth =
+    windowWidth - document.documentElement.clientWidth;
 
    const reInitSearch = () => {
       setMovieName();
@@ -163,6 +165,7 @@ const App = () => {
       } else if (result.Search && !type) {
          if (detailMode) {
             setMovieResults(result.Search);
+            setFetchCount((currentFetch) => currentFetch + 1);
          } else {
             setMovieResults(() => [...movieResults.concat(...result.Search)]);
          }

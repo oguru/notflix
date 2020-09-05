@@ -40,13 +40,8 @@ const MovieCard = (props) => {
       cardBottom: {
          display: "flex",
          flexDirection: "column",
-         height: "130px",
+         height: "160px",
          justifyContent: "space-between"
-      },
-
-      cardExpandOn: {
-         transform: "scale(1.075)",
-         transition: "0.2s ease-in-out"
       },
 
       cardExpandOff: {
@@ -54,63 +49,77 @@ const MovieCard = (props) => {
          transition: "0.2s ease-in-out"
       },
 
+      cardExpandOn: {
+         transform: "scale(1.075)",
+         transition: "0.2s ease-in-out"
+      },
+
       cardImg: {
          borderRadius: theme.spacing(0.5),
-         maxHeight: "300px",
+         maxHeight: "280px",
          maxWidth: "260px",
-         minWidth: "250px",
+         minWidth: "230px",
          objectFit: "contain"
       },
 
       flexColumn: {
+         alignItems: "center",
          display: "flex",
          flexDirection: "column",
-         justifyContent: "flex-start",
-         alignItems: "center"
+         justifyContent: "flex-start"
+      },
+
+      genre: {
+         fontSize: "14px",
+         padding: theme.spacing(1, 0)
       },
 
       movieCard: {
-         width: "300px",
-         height: "100%",
-         padding: theme.spacing(2.5),
          display: "flex",
          flexDirection: "column",
+         height: "100%",
          justifyContent: "space-between",
-         textAlign: "center"
+         padding: theme.spacing(2.5),
+         textAlign: "center",
+         width: "300px"
       },
 
       noPosterStyle: {
+         maxWidth: "60%",
          position: "absolute",
-         top: theme.spacing(5),
-         maxWidth: "60%"
+         top: theme.spacing(5)
       },
 
       rating: {
-         height: theme.spacing(6),
-         width: theme.spacing(5),
+         alignItems: "center",
          display: "flex",
          flexDirection: "column",
+         height: theme.spacing(6),
          justifyContent: "space-between",
-         alignItems: "center"
+         width: theme.spacing(5)
       },
 
       ratingIcon: {
-         height: theme.spacing(3),
-         transition: "0.2s",
-         "a": {
-            outline: "0",
-            border: "none"
-         },
          "&:hover": {
-            transform: "translate(0, -3px)",
-            filter: "drop-shadow(0 3px 3px grey)"
-         }
+            filter: "drop-shadow(0 3px 3px grey)",
+            transform: "translate(0, -3px)"
+         },
+         "a": {
+            border: "none",
+            outline: "0"
+         },
+         height: theme.spacing(3),
+         transition: "0.2s"
+      },
+
+      scoreText: {
+         fontSize: "14px"
       },
 
       scores: {
+         alignItems: "center",
          display: "flex",
-         justifyContent: "space-around",
-         alignItems: "center"
+         justifyContent: "space-around"
       },
 
       scoresModal: {
@@ -121,26 +130,23 @@ const MovieCard = (props) => {
          }
       },
 
-      scoreText: {
-         fontSize: "14px"
-      },
-
       textSpacing: {
          margin: theme.spacing(1)
       },
 
       title: {
-         fontSize: "16px",
-         height: "75px",
+         alignItems: "center",
          display: "flex",
-         justifyContent: "center",
-         alignItems: "center"
+         flexDirection: "column",
+         fontSize: "16px",
+         height: "105px",
+         justifyContent: "center"
       }
    }));
 
    const classes = useStyles();
 
-   const showModal = (movie) => {
+   const showModal = () => {
       setModalState(true);
 
       if (detailMode) {
@@ -198,13 +204,13 @@ const MovieCard = (props) => {
       );
    };
 
-   const movieRatings = (source) => {
-      if (movie) {
+   const movieRatings = (movieData, source) => {
+      if (movieData) {
          const ratingClass = source === "modal" ? `${classes.scores} ${classes.scoresModal}` : `${classes.scores}`;
 
          return (
             <section className={ratingClass}>
-               {movie.Ratings.map(rating => getRating(rating))}
+               {movieData.Ratings.map(rating => getRating(rating))}
             </section>
          );
       }
@@ -218,11 +224,15 @@ const MovieCard = (props) => {
 
    const cardExpand = hovered && detailMode ? "cardExpandOn" : "cardExpandOff";
 
+   console.log(typeof movieRatings);
+   // console.log(typeof poster);
+
    return (
       <>
          <Card raised={hovered}
-            onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}
-            onClick={() => showModal(movie)}
+            onMouseEnter={() => setHovered(true)}
+            onMouseLeave={() => setHovered(false)}
+            onClick={() => showModal()}
             boxShadow={1} className={`${classes.movieCard} ${classes[cardExpand]}`}>
             <div className={classes.flexColumn}>
                <div className={`${classes.noPosterStyle} ${classes.flexColumn}`}>
@@ -231,11 +241,19 @@ const MovieCard = (props) => {
                <img className={classes.cardImg} src={poster} alt={movie.Title}/>
             </div>
             <div className={classes.cardBottom}>
-               <Typography className={`${classes.textSpacing} ${classes.title}`} variant="h6">
-                  <Box lineHeight={1}>
-                     {`${movie.Title} (${movie.Year})`}
-                  </Box>
-               </Typography>
+               <div className={`${classes.textSpacing} ${classes.title}`}>
+                  <Typography variant="h6">
+                     <Box lineHeight={1}>
+                        {`${movie.Title} (${movie.Year})`}
+                     </Box>
+                  </Typography>
+                  <Typography className={classes.genre}
+                     variant="p">
+                     <Box lineHeight={1}>
+                        {movie.Genre}
+                     </Box>
+                  </Typography>
+               </div>
                {movieRatingsCheck()}
             </div>
          </Card>
@@ -248,7 +266,14 @@ const MovieCard = (props) => {
                timeout: 500
             }}>
             <Fade in={modalState}>
-               <ModalCard closeModal={closeModal} movie={modalData} detailMode={detailMode} movieRatings={movieRatings} movieCardStyles={classes} poster={poster} scrollbarWidth={scrollbarWidth} />
+               <ModalCard
+                  closeModal={closeModal}
+                  movie={modalData}
+                  detailMode={detailMode}
+                  movieRatings={movieRatings}
+                  movieCardStyles={classes}
+                  poster={poster}
+                  scrollbarWidth={scrollbarWidth} />
             </Fade>
          </Modal>
       </>
