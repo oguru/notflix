@@ -15,7 +15,8 @@
         }
     },
     "extends": [
-        "plugin:react/recommended"
+      "react-app",
+      "plugin:react-hooks/recommended"
     ],
     "rules": {
         "array-bracket-spacing": 2,
@@ -180,6 +181,7 @@
         "prefer-rest-params": 2,
         "prefer-spread": 2,
         "quotes": ["error", "double", { "avoidEscape": true, "allowTemplateLiterals": true }],
+        "react-hooks/exhaustive-deps": 0,
         "require-atomic-updates": 2,
         "require-await": 2,
         "require-unicode-regexp": 2,

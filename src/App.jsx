@@ -148,7 +148,7 @@ const App = () => {
       }
 
       reInitSearch();
-      setMovieName(name);
+      setMovieName(name.trim());
 
       if (searchOpen) {
          toggleSearch(false);
