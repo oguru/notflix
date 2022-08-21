@@ -1,4 +1,4 @@
-import {AppBar, Button, Drawer, InputBase, Paper, Popper, Switch, Toolbar, Typography} from "@material-ui/core";
+import {AppBar, Button, Drawer, InputBase, Paper, Popper, Switch, Toolbar, Typography, Slide} from "@material-ui/core";
 import React, {useState} from "react";
 import {fade, makeStyles} from "@material-ui/core/styles";
 import CloseIcon from "@material-ui/icons/Close";
@@ -7,13 +7,13 @@ import PropTypes from "prop-types";
 import SearchIcon from "@material-ui/icons/Search";
 import nImg from "../../assets/n-logo.png";
 import notflixImg from "../../assets/notflix-logo-800.png";
+import useScrollTrigger from '@material-ui/core/useScrollTrigger';
 
 const Navbar = (props) => {
    const {
       changeDetailMode,
       detailMode,
       getMovieName,
-      scrollDir,
       searchOpen,
       searchTxt,
       setSearchTxt,
@@ -25,7 +25,6 @@ const Navbar = (props) => {
       changeDetailMode: PropTypes.func,
       detailMode: PropTypes.bool,
       getMovieName: PropTypes.func,
-      scrollDir: PropTypes.string,
       searchOpen: PropTypes.bool,
       searchTxt: PropTypes.string,
       setSearchTxt: PropTypes.func,
@@ -34,6 +33,7 @@ const Navbar = (props) => {
    };
 
    const [anchorEl, setAnchorEl] = useState(null);
+   const scrollTrigger = useScrollTrigger();
 
    const navHeight = "unset";
 
@@ -218,9 +218,10 @@ const Navbar = (props) => {
    };
 
    const helpOpen = Boolean(anchorEl);
-   const helpId = helpOpen ? "popper" : undefined;
+   const helpClass = helpOpen ? "popper" : "";
 
-   const toggleNav = scrollDir === "down" ? classes.navHide : classes.navShow;
+   // const toggleNav = null;
+   // const toggleNav = scrollDir === "down" ? classes.navHide : classes.navShow;
 
    const checkSearch = () => !searchOpen;
 
@@ -263,34 +264,32 @@ const Navbar = (props) => {
       </div>;
 
    return (
-      <>
-         <AppBar className={`${classes.appBarStyles} ${toggleNav}`} position="static" onClick={() => toggleSearch(() => checkSearch())}>
-            <Toolbar className={classes.navStyles}>
-               <div className={classes.topBar}>
-                  <img className={`${classes.notflix} ${nfAnimStatus}`} src={notflixImg} alt="Notflix Logo"/>
-                  <Popper className={classes[helpId]} open={helpOpen} anchorEl={anchorEl}>
-                     <Paper onClick={e => e.stopPropagation()} className={classes.paperHelp} variant="outlined" backgroundColor="white" elevation={23}>
-                        <CloseIcon onClick={() => setAnchorEl(false)} className={classes.closeIcon} />
-                        <Typography paragraph={true}><span className={classes.helpTitle}>Switch On - Full Mode:</span> Loads all movie details allowing scores to be shown on front of cards.</Typography>
-                        <Typography paragraph={true}><span className={classes.helpTitle}>Switch Off - Fast Mode:</span> Loads images, titles and years of movies.</Typography>
-                        <Typography paragraph={true}>Click on a movie card to see more detailed information{infoToggle}, and a score icon to open the relevant website.</Typography>
-                     </Paper>
-                  </Popper>
-                  <div className={classes.topRightNav}>
-                     <HelpIcon className={classes.helpIcon} onClick={toggleHelp} />
-                     <Switch
-                        className={classes.displaySwitch}
-                        onClick={(e) => e.stopPropagation()}
-                        onChange={() => changeDetailMode()}
-                        checked={detailMode}
-                     />
-                  </div>
+      <AppBar className={`${classes.appBarStyles} ${scrollTrigger ? classes.navHide : classes.navShow}`} position="static" onClick={() => toggleSearch(() => checkSearch())}>
+         <Toolbar className={classes.navStyles}>
+            <div className={classes.topBar}>
+               <img className={`${classes.notflix} ${nfAnimStatus}`} src={notflixImg} alt="Notflix Logo"/>
+               <Popper className={classes[helpClass]} open={helpOpen} anchorEl={anchorEl}>
+                  <Paper onClick={e => e.stopPropagation()} className={classes.paperHelp} variant="outlined" backgroundColor="white" elevation={23}>
+                     <CloseIcon onClick={() => setAnchorEl(false)} className={classes.closeIcon} />
+                     <Typography paragraph={true}><span className={classes.helpTitle}>Switch On - Full Mode:</span> Loads all movie details allowing scores to be shown on front of cards.</Typography>
+                     <Typography paragraph={true}><span className={classes.helpTitle}>Switch Off - Fast Mode:</span> Loads images, titles and years of movies.</Typography>
+                     <Typography paragraph={true}>Click on a movie card to see more detailed information{infoToggle}, and a score icon to open the relevant website.</Typography>
+                  </Paper>
+               </Popper>
+               <div className={classes.topRightNav}>
+                  <HelpIcon className={classes.helpIcon} onClick={toggleHelp} />
+                  <Switch
+                     className={classes.displaySwitch}
+                     onClick={(e) => e.stopPropagation()}
+                     onChange={() => changeDetailMode()}
+                     checked={detailMode}
+                  />
                </div>
-               {windowWidth < 600 ?
-                  <Drawer variant="persistent" anchor="top" open={searchOpen}>{searchBar}</Drawer> : searchBar}
-            </Toolbar>
-         </AppBar>
-      </>
+            </div>
+            {windowWidth < 600 ?
+               <Drawer variant="persistent" anchor="top" open={searchOpen}>{searchBar}</Drawer> : searchBar}
+         </Toolbar>
+      </AppBar>
    );
 };
 

@@ -7,9 +7,11 @@ import {makeStyles} from "@material-ui/core/styles";
 
 const App = () => {
    const [detailMode, setDetailMode] = useState(true);
+   const [movieDetails, setMovieDetails] = useState([]);
+
+
    const [initState, changeInit] = useState(true);
    const [modalData, storeModal] = useState({});
-   const [movieDetails, setMovieDetails] = useState([]);
    const [movieName, setMovieName] = useState("");
    const [movieResults, setMovieResults] = useState([]);
    const [page, setPage] = useState(1);
@@ -77,35 +79,35 @@ const App = () => {
 
    }, [movieResults]);
 
-   useEffect(() => {
-      const threshold = 0;
-      let lastScrollY = window.pageYOffset;
-      let ticking = false;
+   // useEffect(() => {
+   //    const threshold = 0;
+   //    let lastScrollY = window.pageYOffset;
+   //    let ticking = false;
 
-      const updateScrollDir = () => {
-         const scrollY = window.pageYOffset;
+   //    const updateScrollDir = () => {
+   //       const scrollY = window.pageYOffset;
 
-         if (Math.abs(scrollY - lastScrollY) < threshold) {
-            ticking = false;
+   //       if (Math.abs(scrollY - lastScrollY) < threshold) {
+   //          ticking = false;
 
-            return;
-         }
+   //          return;
+   //       }
 
-         setScrollDir(scrollY > lastScrollY ? "down" : "up");
-         lastScrollY = scrollY > 0 ? scrollY : 0;
-         ticking = false;
-      };
+   //       setScrollDir(scrollY > lastScrollY ? "down" : "up");
+   //       lastScrollY = scrollY > 0 ? scrollY : 0;
+   //       ticking = false;
+   //    };
 
-      const onScroll = () => {
-         if (!ticking) {
-            window.requestAnimationFrame(updateScrollDir);
-            ticking = true;
-         }
-      };
+   //    const onScroll = () => {
+   //       if (!ticking) {
+   //          window.requestAnimationFrame(updateScrollDir);
+   //          ticking = true;
+   //       }
+   //    };
 
-      window.addEventListener("scroll", onScroll);
+   //    window.addEventListener("scroll", onScroll);
 
-   }, []);
+   // }, []);
 
    useEffect(() => {
       const getWidth = () => setWindowWidth(window.innerWidth);
@@ -161,7 +163,7 @@ const App = () => {
       } else if (result.Search && !type) {
          if (detailMode) {
             setMovieResults(result.Search);
-            setFetchCount((currentFetch) => currentFetch + 1);
+            // setFetchCount((currentFetch) => currentFetch + 1);
          } else {
             setMovieResults(() => [...movieResults.concat(...result.Search)]);
          }
@@ -206,7 +208,7 @@ const App = () => {
                changeDetailMode={changeDetailMode}
                detailMode={detailMode}
                getMovieName={getMovieName}
-               scrollDir={scrollDir}
+               // scrollDir={scrollDir}
                searchOpen={searchOpen}
                searchTxt={searchTxt}
                setSearchTxt={setSearchTxt}
