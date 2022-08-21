@@ -206,11 +206,16 @@ const MovieCard = (props) => {
 
    const movieRatings = (movieData, source) => {
       if (movieData) {
-         const ratingClass = source === "modal" ? `${classes.scores} ${classes.scoresModal}` : `${classes.scores}`;
+         const ratingClass = 
+            source === "modal" 
+            ? `${classes.scores} ${classes.scoresModal}` 
+            : `${classes.scores}`;
 
          return (
             <section className={ratingClass}>
-               {movieData.Ratings.map(rating => getRating(rating))}
+               {movieData.Ratings.map(
+                  rating => getRating(rating)
+               )}
             </section>
          );
       }

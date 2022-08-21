@@ -1,4 +1,3 @@
-import "./App.module.scss";
 import React, {useEffect, useState} from "react";
 import {Slide, Snackbar} from "@material-ui/core";
 import BottomScrollListener from "react-bottom-scroll-listener";
@@ -39,24 +38,21 @@ const App = () => {
       },
       sBarDetailMode: {backgroundColor: theme.palette.secondary.main},
       sBarFastMode: {backgroundColor: theme.palette.secondary.dark},
-      snackBar: {bottom: theme.spacing(2)}
+      snackBar: {
+         bottom: theme.spacing(2),
+         "& .MuiSnackbarContent-root": {
+            backgroundColor: snackbarBackground,
+            color: "white",
+            justifyContent: "center",
+            minWidth: "200px",
+         }
+      },
    }));
 
    const snackbarBackground = detailMode ?
       "rgba(229, 9, 20, 1)" : "rgba(43, 89, 195, 1)";
 
-   const snackbarStyles = makeStyles({
-      root: {
-         backgroundColor: snackbarBackground,
-         color: "white",
-         justifyContent: "center",
-         minWidth: "200px"
-      }
-   }, {name: "MuiSnackbarContent"});
-
    const classes = useStyles();
-
-   snackbarStyles();
 
    useEffect(() => {
       if (movieName && page > 1) {
@@ -241,7 +237,6 @@ const App = () => {
             TransitionComponent={Slide}
             autoHideDuration={1500}
             classes= {{
-               content: classes.snackBarContent,
                root: classes.snackBar
             }}
             message={snackbar.message}
