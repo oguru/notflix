@@ -1,5 +1,5 @@
 import {AppBar, Button, Drawer, InputBase, Paper, Popper, Switch, Toolbar, Typography, Slide} from "@material-ui/core";
-import React, {useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {fade, makeStyles} from "@material-ui/core/styles";
 import CloseIcon from "@material-ui/icons/Close";
 import HelpIcon from "@material-ui/icons/Help";
@@ -11,29 +11,39 @@ import useScrollTrigger from '@material-ui/core/useScrollTrigger';
 
 const Navbar = (props) => {
    const {
-      changeDetailMode,
+      handleToggleDetailMode,
       detailMode,
-      getMovieName,
-      searchOpen,
+      handleSubmitSearch,
+      isLoading,
       searchTxt,
       setSearchTxt,
-      toggleSearch,
-      windowWidth
+      xsScreen
    } = props;
 
    Navbar.propTypes = {
-      changeDetailMode: PropTypes.func,
+      handleToggleDetailMode: PropTypes.func,
       detailMode: PropTypes.bool,
-      getMovieName: PropTypes.func,
-      searchOpen: PropTypes.bool,
+      handleSubmitSearch: PropTypes.func,
+      isLoading: PropTypes.bool,
       searchTxt: PropTypes.string,
       setSearchTxt: PropTypes.func,
-      toggleSearch: PropTypes.func,
-      windowWidth: PropTypes.number
+      xsScreen: PropTypes.bool
    };
 
    const [anchorEl, setAnchorEl] = useState(null);
+   const [searchOpen, toggleSearch] = useState(false);
    const scrollTrigger = useScrollTrigger();
+
+   const handleToggleSearch = () => {
+      if (xsScreen) {
+         toggleSearch(!searchOpen)
+      }
+   }
+
+   const handleSubmit = () => {
+         toggleSearch();
+         handleSubmitSearch({query: searchTxt});
+   }
 
    const navHeight = "unset";
 
@@ -218,20 +228,16 @@ const Navbar = (props) => {
    };
 
    const helpOpen = Boolean(anchorEl);
-   const helpClass = helpOpen ? "popper" : "";
 
-   // const toggleNav = null;
-   // const toggleNav = scrollDir === "down" ? classes.navHide : classes.navShow;
-
-   const checkSearch = () => !searchOpen;
-
-   const nfAnimStatus = searchOpen ? classes.nfAnim : "";
-
-   const infoToggle = detailMode ? "" : "/movie scores";
+   useEffect(() => {
+      if (searchOpen && scrollTrigger) {
+         toggleSearch(false)
+      }
+    }, [scrollTrigger]);
 
    const searchBar =
       <div className={classes.searchCont}>
-         {windowWidth < 600 ?
+         {xsScreen ?
             <img className={classes.notflix} src={nImg} alt="N Logo"/> : ""}
          <div className={classes.flexCont}>
             <div className={classes.search}>
@@ -246,16 +252,17 @@ const Navbar = (props) => {
                   }}
                   value={searchTxt}
                   inputProps={{"aria-label": "search"}}
-                  onKeyPress={e => e.key === "Enter" ? getMovieName(searchTxt) : null}
+                  onKeyPress={e => e.key === "Enter" ? handleSubmit() : null}
                   onInput={e => setSearchTxt(e.target.value)}
                   onClick={(e) => e.stopPropagation()}
                   autoFocus={true}
                />
             </div>
             <Button
+               disabled={isLoading}
                id="searchButton"
                className={classes.button}
-               onClick={() => getMovieName(searchTxt)}
+               onClick={handleSubmit}
                variant="contained"
                color="secondary">
          Go!
@@ -264,16 +271,16 @@ const Navbar = (props) => {
       </div>;
 
    return (
-      <AppBar className={`${classes.appBarStyles} ${scrollTrigger ? classes.navHide : classes.navShow}`} position="static" onClick={() => toggleSearch(() => checkSearch())}>
+      <AppBar className={`${classes.appBarStyles} ${scrollTrigger ? classes.navHide : classes.navShow}`} position="static" onClick={() => handleToggleSearch()}>
          <Toolbar className={classes.navStyles}>
             <div className={classes.topBar}>
-               <img className={`${classes.notflix} ${nfAnimStatus}`} src={notflixImg} alt="Notflix Logo"/>
-               <Popper className={classes[helpClass]} open={helpOpen} anchorEl={anchorEl}>
+               <img className={`${classes.notflix} ${searchOpen ? classes.nfAnim : ""}`} src={notflixImg} alt="Notflix Logo"/>
+               <Popper className={classes[helpOpen ? "popper" : ""]} open={helpOpen} anchorEl={anchorEl}>
                   <Paper onClick={e => e.stopPropagation()} className={classes.paperHelp} variant="outlined" backgroundColor="white" elevation={23}>
                      <CloseIcon onClick={() => setAnchorEl(false)} className={classes.closeIcon} />
                      <Typography paragraph={true}><span className={classes.helpTitle}>Switch On - Full Mode:</span> Loads all movie details allowing scores to be shown on front of cards.</Typography>
                      <Typography paragraph={true}><span className={classes.helpTitle}>Switch Off - Fast Mode:</span> Loads images, titles and years of movies.</Typography>
-                     <Typography paragraph={true}>Click on a movie card to see more detailed information{infoToggle}, and a score icon to open the relevant website.</Typography>
+                     <Typography paragraph={true}>Click on a movie card to see more detailed information{detailMode ? "" : "/movie scores"}, and a score icon to open the relevant website.</Typography>
                   </Paper>
                </Popper>
                <div className={classes.topRightNav}>
@@ -281,12 +288,12 @@ const Navbar = (props) => {
                   <Switch
                      className={classes.displaySwitch}
                      onClick={(e) => e.stopPropagation()}
-                     onChange={() => changeDetailMode()}
+                     onChange={() => handleToggleDetailMode()}
                      checked={detailMode}
                   />
                </div>
             </div>
-            {windowWidth < 600 ?
+            {xsScreen ?
                <Drawer variant="persistent" anchor="top" open={searchOpen}>{searchBar}</Drawer> : searchBar}
          </Toolbar>
       </AppBar>

@@ -1,36 +1,32 @@
-import {Grid, Grow} from "@material-ui/core";
+import {Backdrop, Fade, Grid, Grow, Modal} from "@material-ui/core";
 import React, {useEffect, useState} from "react";
 import MovieCard from "../../components/MovieCard";
 import PropTypes from "prop-types";
 import {makeStyles} from "@material-ui/core/styles";
+import ModalCard from "../../components/ModalCard";
 
 const Dashboard = (props) => {
 
    const {
       detailMode,
-      fetchData,
-      modalData,
-      movieDetails,
+      handleGetSingleMovieDetails,
       movieResults,
       scrollbarWidth,
       searchTxt,
-      storeModal,
-      windowWidth
+      xsScreen
    } = props;
 
    Dashboard.propTypes = {
       detailMode: PropTypes.bool,
-      fetchData: PropTypes.func,
-      modalData: PropTypes.object,
-      movieDetails: PropTypes.array,
+      handleGetSingleMovieDetails: PropTypes.func,
       movieResults: PropTypes.array,
       scrollbarWidth: PropTypes.number,
       searchTxt: PropTypes.string,
-      storeModal: PropTypes.func,
-      windowWidth: PropTypes.number
+      xsScreen: PropTypes.bool
    };
 
    const [cardHeight, setCardHeight] = useState(500);
+   const [modalState, setModalState] = useState({open: false, index: 0});
 
    useEffect(() => {
       if (detailMode) {
@@ -61,7 +57,7 @@ const Dashboard = (props) => {
       if (movieResults === "error") {
          return "No results found. Please ensure spelling and spacing is correct.";
       } else if (searchTxt.length === 0) {
-         if (windowWidth < 600) {
+         if (xsScreen) {
             return "Click the top bar to reveal the search bar, then type in a movie name to get started...";
          }
 
@@ -71,53 +67,57 @@ const Dashboard = (props) => {
       return "";
    };
 
-   const createMovieCards = () => {
-      if (movieResults.length > 0
-          && movieResults !== "error"
-      ) {
-         const resultsCopy = detailMode ?
-            [...movieDetails] : [...movieResults];
-         const movieImages = resultsCopy.map((movie) => {
-            const moviePoster = new Image();
-            moviePoster.src = movie.Poster;
+   const handleShowModal = async ({ratings, id, index}) => {
+      console.log('handleShowModal i:', index)
+      if (!ratings) {
+         await handleGetSingleMovieDetails(index)
+      } 
+      setModalState({index, open: true})
+   }
 
-            return moviePoster;
-         });
-
-         const detailType = detailMode ? movieDetails : movieResults;
-
-         return detailType.map((movie) => {
-            return (
-               <Grow key={movie.imdbID} in={true}>
-                  <Grid
-                     className={classes.gridCard}
-                     item xs={12} sm={6} md={4} lg={3} xl={2}
-                  >
-                     <MovieCard
-                        detailMode={detailMode}
-                        fetchData={fetchData}
-                        movie={movie}
-                        movieImages={movieImages}
-                        modalData={modalData}
-                        scrollbarWidth={scrollbarWidth}
-                        storeModal={storeModal}
-                     />
-                  </Grid>
-               </Grow>
-            );
-         });
-      }
-
-      return (
-         <p className={classes.initTxt}>{dashText()}</p>
-      );
-   };
+   const handleCloseModal = () => {
+      setModalState((prev) => {return {...prev, open: false}})
+   }
 
    return (
       <>
+         <p className={classes.initTxt}>{dashText()}</p>
          <Grid container>
-            {createMovieCards()}
+            {movieResults.length > 0 && 
+            movieResults !== "error" && (
+               movieResults.map((movie, i) => {
+                  return (
+                     <Grow key={movie.imdbID} in={true}>
+                        <Grid
+                           className={classes.gridCard}
+                           item xs={12} sm={6} md={4} lg={3} xl={2}
+                        >
+                           <MovieCard
+                              detailMode={detailMode}
+                              handleShowModal={() => handleShowModal({index: i, ratings: movie.Ratings, id: movie.imdbID})}
+                              movie={movie}
+                              scrollbarWidth={scrollbarWidth}
+                           />
+                        </Grid>
+                     </Grow>
+                  );
+               })
+            )}
          </Grid>
+         <Modal open={modalState.open}
+            onClose={handleCloseModal}
+            closeAfterTransition
+            BackdropComponent={Backdrop}
+            BackdropProps={{
+               timeout: 500
+            }}>
+            <Fade in={modalState.open}>
+               <ModalCard
+                  closeModal={handleCloseModal}
+                  movie={movieResults[modalState.index]}
+               />
+            </Fade>
+         </Modal>
       </>
    );
 };
