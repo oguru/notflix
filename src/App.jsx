@@ -13,6 +13,8 @@ const initialState = {
    page: 1, 
    detailMode: true, 
    movieResults: {results: [], totalResults: 0},
+   results: [], 
+   totalResults: 0,
    snackbar: {
       detail: false,
       fast: false
@@ -20,51 +22,35 @@ const initialState = {
 }
 
 function reducer(state, action) {
-   let searchTerm
-   let movieResults;
+   let results;
    let page;
 
-   console.log("reducer action: ", action.type)
-
    switch (action.type) {
-   //   case 'toggleDetailMode':
-   //     return {detailMode: !state.detailMode};
       case 'setMovies':
-         if (action.searchTerm != state.searchTerm) {
+         if (action.searchTerm) {
             // new search
-            searchTerm = action.searchTerm
-            movieResults = action.movieResults
+            results = action.results
             page = 1
-         } else if (action.page) {
-            // adding page
-            movieResults = [...state.movieResults, ...action.movieResults]
-            page = action.page;
-            searchTerm = state.searchTerm;
-         } else {
-            // updating existing results
-            movieResults = action.movieResults
-            page = state.page;
-            console.log('state.searchTerm:', state.searchTerm)
-            searchTerm = state.searchTerm;
+
+            return {
+               ...state, 
+               searchTerm: action.searchTerm, 
+               page, 
+               results, 
+               totalResults: action.totalResults
+            };
          }
+         // updating existing results
+         results = action.results
 
-         return {...state, searchTerm, page, movieResults};
-      case 'updateMovies':
-         return {...state, movieResults: [...state.movieResults, ...action.movieResults], snackbar: {
-            detail: false,
-            fast: false
-         }};
-      case 'updateSingleMovie':
-         const updatedResults = state.movieResults.results;
+         return {...state, results};
       case 'addPage': 
-         // merge with setMovies ?
-         movieResults = [...state.movieResults.results, ...action.movieResults.results]
+         results = [...state.results, ...action.results]
          page = state.page + 1;
-
-         return {...state, page, movieResults: {...state.movieResults, results: movieResults}};
+         return {...state, page, results};
       case 'toggleDetail':
-         movieResults = action.movieResults || state.movieResults
-         return {...state, detailMode: !state.detailMode, movieResults, snackbar: {
+         results = action.results || state.results
+         return {...state, detailMode: !state.detailMode, results, snackbar: {
             detail: !state.detailMode,
             fast: state.detailMode
          }}
@@ -82,6 +68,7 @@ function reducer(state, action) {
 
 const App = () => {
    const [movieState, dispatch] = useReducer(reducer, initialState);
+   console.log('movieState:', movieState)
    const [isLoading, setIsLoading] = useState(false);
    
    const [searchTxt, setSearchTxt] = useState("time");
@@ -92,9 +79,7 @@ const App = () => {
          backgroundColor: theme.palette.background.default,
          height: "100%",
          maxWidth: "100vw",
-         // height: "100vh",
          minHeight: "100vh",
-         // overflow: "auto",
          paddingBottom: theme.spacing(2)
       },
       dashboard: {
@@ -106,16 +91,15 @@ const App = () => {
       snackBar: {
          bottom: theme.spacing(2),
          "& .MuiSnackbarContent-root": {
-            backgroundColor: snackbarBackground,
+            backgroundColor: movieState.detailMode ?
+               "rgba(229, 9, 20, 1)" : 
+               "rgba(43, 89, 195, 1)",
             color: "white",
             justifyContent: "center",
             minWidth: "200px",
          }
       },
    }));
-
-   const snackbarBackground = movieState.detailMode ?
-      "rgba(229, 9, 20, 1)" : "rgba(43, 89, 195, 1)";
 
    const classes = useStyles();
 
@@ -165,12 +149,21 @@ const App = () => {
       
       if (movieState.detailMode) {
          Promise.all(results.results).then(res => {
-            dispatch({type: "setMovies", movieResults: {results: res, totalResults: results.totalResults}, searchTerm: trimmedQuery})
+            dispatch({
+               type: "setMovies", 
+               results: res, 
+               totalResults: results.totalResults, 
+               searchTerm: trimmedQuery
+            })
             setIsLoading(false);
          })
       } else {
-         console.log('results:', results)
-         dispatch({type: "setMovies", movieResults: results, searchTerm: trimmedQuery})
+         dispatch({
+            type: "setMovies", 
+            results: results.Search, 
+            totalResults: results.totalResults, 
+            searchTerm: trimmedQuery
+         })
          setIsLoading(false);
       }
    }
@@ -192,13 +185,11 @@ const App = () => {
 
       if (movieState.detailMode && param === 's') {
          return {results: detailedResults, totalResults: results.totalResults};
-      } else if (results.Search) {
-         return {results: results.Search, totalResults: results.totalResults}
-      }
-
-      if (movieState.detailMode && param === 's') {
-         console.log("results even though");
-      }
+      } 
+      // else if (results.Search) {
+      //    return {results: results.Search, totalResults: results.totalResults}
+      // }
+      
       return results;
    };
 
@@ -212,55 +203,100 @@ const App = () => {
    const handleToggleDetailMode = async () => {
       let updatedResults;
       // if turning detail mode on with current results
-      if (!movieState.detailMode && movieState.searchTerm && movieState.movieResults.results.length) {
+      if (!movieState.detailMode && movieState.searchTerm && movieState.totalResults) {
          let changes = false;
-         const results = movieState.movieResults.results.map(res => {
+         const results = movieState.results.map(
+            (res) => {
             if (res.Ratings) {
                return res;
             } else {
-               console.log('movieState.movieResults:', movieState.movieResults.results)
                if (!changes) {
                   changes = true
                }
-               return fetchData({query: res.imdbID, param: "i"}).results;
+               return fetchData({query: res.imdbID, param: "i"});
             }
          });
 
          if (changes) {
-            console.log('changes:', changes)
-            await Promise.all(results).then(res => updatedResults = res)
+            await Promise.all(results).then(res => {
+               updatedResults = res
+            })
          }
       } 
       
-      dispatch({type: "toggleDetail", movieResults: updatedResults})
+      dispatch({type: "toggleDetail", results: updatedResults})
    };
 
    const handleGetSingleMovieDetails = async (index) => {
-      const movieResults = {...movieState.movieResults};
+      const movieResults = {...movieState.results};
       const movie = movieResults.results[index];
       const movieDetails = await fetchData({query: movie.imdbID, param: "i"})
-      movieResults.results.splice(index, 1, movieDetails)
+      movieResults.splice(index, 1, movieDetails)
 
-      dispatch({type: "setMovies", movieResults, searchTerm: movieState.searchTerm});
+      dispatch({type: "setMovies", results: movieResults, searchTerm: movieState.searchTerm});
    }
 
-   const addPage = async () => {
+   const addPage = () => {
+      console.log('addPage triggered')
       if (isLoading) return;
 
-      if (movieState.movieResults.totalResults > movieState.movieResults.results.length) {
+      if (movieState.totalResults > movieState.results.length) {
          setIsLoading(true);
 
-         let results = await fetchData({query: movieState.searchTerm, param: "s", page: movieState.page + 1})
+         let results = fetchData({
+            query: movieState.searchTerm, 
+            param: "s", 
+            page: movieState.page + 1
+         })
       
-         if (movieState.detailMode) {
-            Promise.all(results.results).then(res => {
-               dispatch({type: "addPage", movieResults: {results: res}})
+         Promise.resolve(results).then(res => {
+
+            if (movieState.detailMode) {
+               Promise.all(res.results).then(detailedRes => {
+                  dispatch({
+                     type: "addPage", 
+                     results: detailedRes, 
+                     page: movieState.page + 1
+                  })
+                  setIsLoading(false);
+               })
+            } else {
+
+               dispatch({
+                  type: "addPage", 
+                  results: res.Search, 
+                  page: movieState.page + 1
+               })
                setIsLoading(false);
-            })
-         } else {
-            dispatch({type: "addPage", movieResults: results})
-            setIsLoading(false);
-         }
+            }
+         })
+         // if (movieState.detailMode) {
+         //    Promise.resolve(results)
+         //    Promise.all(results.results).then(res => {
+         //       dispatch({
+         //          type: "addPage", 
+         //          results: res, 
+         //          page: movieState.page + 1
+         //       })
+         //       setIsLoading(false);
+         //    })
+         // } else {
+         //    Promise.resolve(results).then(res => {
+
+         //       dispatch({
+         //          type: "addPage", 
+         //          results: res.Search, 
+         //          page: movieState.page + 1
+         //       })
+         //       setIsLoading(false);
+         //    })
+         //    // dispatch({
+         //    //    type: "addPage", 
+         //    //    results: results.Search, 
+         //    //    page: movieState.page + 1
+         //    // })
+         //    // setIsLoading(false);
+         // }
       }
    };
 
@@ -290,14 +326,16 @@ const App = () => {
                <Dashboard
                   detailMode={movieState.detailMode}
                   handleGetSingleMovieDetails={handleGetSingleMovieDetails}
-                  movieResults={movieState.movieResults.results}
+                  isLoading={isLoading}
+                  movieResults={movieState.results}
                   searchTxt={searchTxt}
                   xsScreen={xsScreen}
                />
             </section>
             <BottomScrollListener
+               debounceOptions={200}
                offset={250}
-               onBottom={() => addPage()}
+               onBottom={addPage}
             />
          </section>
          <Snackbar
