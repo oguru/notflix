@@ -4,12 +4,16 @@ import MovieCard from "../../components/MovieCard";
 import PropTypes from "prop-types";
 import {makeStyles} from "@material-ui/core/styles";
 import ModalCard from "../../components/ModalCard";
+import useMovieCardStyles from "../../styles/movieCardStyles";
+import sharedStyles from "../../styles/shared";
+import LoadingBox from "../../components/LoadingBox/LoadingBox";
 
 const Dashboard = (props) => {
 
    const {
       detailMode,
       handleGetSingleMovieDetails,
+      isLoading,
       movieResults,
       scrollbarWidth,
       searchTxt,
@@ -19,6 +23,7 @@ const Dashboard = (props) => {
    Dashboard.propTypes = {
       detailMode: PropTypes.bool,
       handleGetSingleMovieDetails: PropTypes.func,
+      isLoading: PropTypes.bool,
       movieResults: PropTypes.array,
       scrollbarWidth: PropTypes.number,
       searchTxt: PropTypes.string,
@@ -53,7 +58,7 @@ const Dashboard = (props) => {
 
    const classes = useStyles();
 
-   const dashText = () => {
+   const getDashText = () => {
       if (movieResults === "error") {
          return "No results found. Please ensure spelling and spacing is correct.";
       } else if (searchTxt.length === 0) {
@@ -67,10 +72,9 @@ const Dashboard = (props) => {
       return "";
    };
 
-   const handleShowModal = async ({ratings, id, index}) => {
-      console.log('handleShowModal i:', index)
+   const handleShowModal = ({ratings, index}) => {
       if (!ratings) {
-         await handleGetSingleMovieDetails(index)
+         handleGetSingleMovieDetails(index)
       } 
       setModalState({index, open: true})
    }
@@ -79,9 +83,11 @@ const Dashboard = (props) => {
       setModalState((prev) => {return {...prev, open: false}})
    }
 
+   const movieCardClasses = {...useMovieCardStyles(), ...sharedStyles()};
+
    return (
       <>
-         <p className={classes.initTxt}>{dashText()}</p>
+         <p className={classes.initTxt}>{getDashText()}</p>
          <Grid container>
             {movieResults.length > 0 && 
             movieResults !== "error" && (
@@ -93,6 +99,7 @@ const Dashboard = (props) => {
                            item xs={12} sm={6} md={4} lg={3} xl={2}
                         >
                            <MovieCard
+                              classes={movieCardClasses}
                               detailMode={detailMode}
                               handleShowModal={() => handleShowModal({index: i, ratings: movie.Ratings, id: movie.imdbID})}
                               movie={movie}
@@ -103,6 +110,15 @@ const Dashboard = (props) => {
                   );
                })
             )}
+            {isLoading && 
+               [...Array(10).keys()].map((key) => <Grow key={`ghostBox${key}`} in={true}>
+               <Grid
+                  className={classes.gridCard}
+                  item xs={12} sm={6} md={4} lg={3} xl={2}
+               >
+                  <LoadingBox classes={movieCardClasses} index={key} showRatings={detailMode} />
+               </Grid>
+            </Grow>)}
          </Grid>
          <Modal open={modalState.open}
             onClose={handleCloseModal}

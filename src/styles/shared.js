@@ -8,6 +8,7 @@ const sharedStyles = makeStyles((theme) => ({
       minWidth: "230px",
       objectFit: "contain"
    },
+   
    textSpacing: {
       margin: theme.spacing(1)
    },

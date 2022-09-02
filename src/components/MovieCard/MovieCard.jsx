@@ -13,9 +13,11 @@ const MovieCard = (props) => {
       detailMode,
       handleShowModal,
       movie,
+      classes
    } = props;
 
    MovieCard.propTypes = {
+      classes: PropTypes.object,
       detailMode: PropTypes.bool,
       handleShowModal: PropTypes.func,
       movie: PropTypes.object,
@@ -23,7 +25,6 @@ const MovieCard = (props) => {
 
    const [hovered, setHovered] = useState(false);
 
-   const classes = {...useMovieCardStyles(), ...sharedStyles()};
 
    const hasPoster = movie.Poster !== "N/A"
    const cardExpand = hovered && detailMode ? "cardExpandOn" : "cardExpandOff";
@@ -34,7 +35,8 @@ const MovieCard = (props) => {
             onMouseEnter={() => setHovered(true)}
             onMouseLeave={() => setHovered(false)}
             onClick={() => handleShowModal()}
-            elevation={1} className={`${classes.movieCard} ${classes[cardExpand]}`}
+            elevation={1} 
+            className={`${classes.movieCard} ${classes[cardExpand]}`}
          >
             <div className={classes.flexColumn}>
                {!hasPoster && (
@@ -43,7 +45,11 @@ const MovieCard = (props) => {
                         <p>(No poster)</p>
                   </div>
                )}
-               <img className={classes.cardImg} src={hasPoster ? movie.Poster : posterPlaceholder} alt={movie.Title}/>
+               <img 
+                  className={classes.cardImg} 
+                  src={hasPoster ? movie.Poster : posterPlaceholder} 
+                  alt={movie.Title}
+               />
             </div>
             <div className={classes.cardBottom}>
                <div className={`${classes.textSpacing} ${classes.title}`}>

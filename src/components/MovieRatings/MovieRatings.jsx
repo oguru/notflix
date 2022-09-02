@@ -4,8 +4,14 @@ import imdbIcon from "../../assets/imdb-logo.png";
 import metaIcon from "../../assets/metacritic-icon.png";
 import rtIcon from "../../assets/tomato-svg-logo-2.png";
 import useMovieCardStyles from "../../styles/movieCardStyles";
+import PropTypes from "prop-types";
 
 const MovieRatings = ({styles = "", ratings, title, imdbId}) => {
+   MovieRatings.propTypes = {
+      styles: PropTypes.string,
+      //add others
+   }
+
    const ratingData = {
       "Internet Movie Database": {
          siteIcon: imdbIcon,
@@ -27,7 +33,7 @@ const MovieRatings = ({styles = "", ratings, title, imdbId}) => {
       <section className={`${classes.scores} ${styles}`}>
          {ratings.map(
             rating => (
-               <div key={`${imdbId}${rating.Source}`} className={`${classes.rating} ${classes.ratingModal}`}>
+               <div key={`${imdbId}${rating.Source}`} className={classes.rating}>
                   <a 
                      href={ratingData[rating.Source].siteLink} 
                      onClick={(event) => event.stopPropagation()} 
