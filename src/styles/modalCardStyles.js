@@ -1,20 +1,35 @@
-import { makeStyles } from "@material-ui/core";
+import {makeStyles} from "@material-ui/core";
 
-const modalCardStyles = makeStyles((theme) => ({
-
+const useModalCardStyles = makeStyles((theme) => ({
    closeIcon: {
       "&:hover": {
          transform: "scale(1.1)"
       },
+      alignSelf: "flex-start",
+      color: "white",
       cursor: "pointer",
-      position: "absolute",
-      right: theme.spacing(0.75),
-      top: theme.spacing(0.75),
+      fontSize: "30px",
       transition: "0.2s",
-      
+
       [theme.breakpoints.up("md")]: {
          right: theme.spacing(2),
          top: theme.spacing(2)
+      }
+   },
+
+   customScrollbar: {
+      "&::-webkit-scrollbar": {
+         width: "7px"
+      },
+
+      "&::-webkit-scrollbar-track": {
+         backgroundColor: "rgb(247, 247, 247)",
+         boxShadow: "inset 0 0 6px rgba(207, 207, 207, 0.096)"
+      },
+
+      "&::-webkit-scrollbar-thumb": {
+         backgroundColor: "rgba(229, 9, 20, 1)",
+         borderRadius: "2px"
       }
    },
 
@@ -39,44 +54,46 @@ const modalCardStyles = makeStyles((theme) => ({
          flexDirection: "column-reverse",
          height: "100%",
          justifyContent: "space-between",
-         paddingLeft: theme.spacing(1)
+         paddingLeft: theme.spacing(2)
       }
    },
 
    modalCard: {
-      backgroundColor: "white",
-      border: 
-         `${theme.palette.background.default} 
-         solid 
-         ${theme.spacing(2)}px`,
+      backgroundColor: "#eef1fc",
+      // border:
+      //    `${theme.palette.background.default}
+      //    solid
+      //    ${theme.spacing(2)}px`,
+      borderTop: 0,
       borderRadius: theme.spacing(0.5),
       boxShadow: theme.shadows[5],
-      height: (props) => `${props.minModalHeight}px`,
-      left: (props) => 
-         `${props.halfClientWidth - props.minModalWidth / 2}px`,
-      overflow: "scroll",
-      padding: theme.spacing(2),
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      height: (props) => `${props.modalHeight}px`,
+      left: (props) => `${props.halfClientWidth - props.modalWidth / 2}px`,
+      // left: () => 0,
+      overflow: "hidden",
       position: "fixed",
-      scrollbarWidth: "thin",
-      top: (props) => `calc(50vh - ${props.minModalHeight}px/2)`,
-      width: (props) => `${props.minModalWidth}px`,
+      // top: (props) => `calc(50vh - ${props.modalHeight}px/2)`,
+      top: (props) => `calc(50vh - ${props.modalHeight}px/2)`,
+      width: (props) => `${props.modalWidth}px`,
+      // width: () => "100vw",
 
       [theme.breakpoints.up("sm")]: {
-         height: (props) => `${props.minModalHeight * 1.25}px`,
-         left: (props) => 
-            `${props.halfClientWidth - props.minModalWidth * 0.625}px`,
-         top: (props) => 
-            `calc(50vh - ${props.minModalHeight * 0.625}px)`,
-         width: (props) => `${props.minModalWidth * 1.25}px`
+         // height: (props) => `${props.modalHeight * 1.25}px`,
+         // left: (props) => `${props.halfClientWidth - props.modalWidth * 0.625}px`,
+         // top: (props) => `calc(50vh - ${props.modalHeight * 0.625}px)`
+         // width: (props) => `${props.modalWidth * 1.25}px`
       },
 
       [theme.breakpoints.up("md")]: {
-         height: (props) => `${props.minModalHeight}px`,
-         left: (props) => 
-            `${props.halfClientWidth - props.minModalWidth * 1.125}px`,
-         overflow: "visible",
-         top: (props) => `calc(50vh - ${props.minModalHeight / 2}px)`,
-         width: (props) => `${props.minModalWidth * 2.25}px`
+
+         // height: (props) => `${props.modalHeight}px`,
+         // left: (props) => `${props.halfClientWidth - props.modalWidth * 1.125}px`,
+         overflow: "visible"
+         // top: (props) => `calc(50vh - ${props.modalHeight / 2}px)`
+         // width: (props) => `${props.modalWidth * 2.25}px`
       }
    },
 
@@ -84,48 +101,62 @@ const modalCardStyles = makeStyles((theme) => ({
       alignItems: "center",
       display: "flex",
       flexDirection: "column",
+      // height: (props) => `${props.modalHeight - 65}px`,
       justifyContent: "space-between",
+      overflow: "auto",
+      padding: `${theme.spacing(2)}px ${theme.spacing(2)}px`,
+
+      "@media (max-height: 550px)": {
+         paddingBottom: theme.spacing(5)
+      },
+
+      [theme.breakpoints.up("sm")]: {
+         height: (props) => `${props.modalHeight * 1.25 - 65}px`
+      },
 
       [theme.breakpoints.up("md")]: {
          alignItems: "flex-start",
          flexDirection: "row",
-         height: "300px",
-         justifyContent: "flex-start",
-         marginBottom: theme.spacing(2)
+         height: (props) => `${props.modalHeight - 65}px`,
+         overflow: "hidden",
+         justifyContent: "flex-start"
+         // padding: `${theme.spacing(2)}px ${theme.spacing(2)}px 0`
       }
    },
 
-   modalImg: {
-      maxHeight: "300px"
+   plotCont: {
+      [theme.breakpoints.up("md")]: {
+         display: "flex",
+         flexDirection: "column",
+         order: "2",
+         flexGrow: 1
+      }
    },
 
    plotTxt: {
-      "&::-webkit-scrollbar": {
-         width: "7px"
-      },
-      "&::-webkit-scrollbar-track": {
-         backgroundColor: "rgb(247, 247, 247)",
-         boxShadow: "inset 0 0 6px rgba(207, 207, 207, 0.096)",
-      },
-      "&::-webkit-scrollbar-thumb": {
-         backgroundColor: "rgba(229, 9, 20, 1)",
-         borderRadius: "2px"
-      },
-
+      overflowY: "auto",
       [theme.breakpoints.up("md")]: {
+         flexGrow: 1,
          height: "240px",
-         marginBottom: theme.spacing(1.5),
-         overflowY: "auto",
-         paddingRight: theme.spacing(1),
+         marginBottom: theme.spacing(2),
+         paddingRight: theme.spacing(1)
       }
    },
 
    scoresModal: {
-      margin: `${theme.spacing(1.5)}px 0`,
+      justifyContent: "space-evenly",
+      margin: `${theme.spacing(3)}px 0 ${theme.spacing(1)}px`,
+      // paddingBottom: theme.spacing(2),
 
       [theme.breakpoints.up("md")]: {
-         justifyContent: "space-evenly",
-         margin: `0 ${theme.spacing(5)}px`
+         "& .rating": {
+            marginLeft: theme.spacing(4)
+         },
+
+         justifyContent: "flex-end",
+         margin: `
+            0 
+            ${theme.spacing(1)}px`
       }
    },
 
@@ -141,9 +172,35 @@ const modalCardStyles = makeStyles((theme) => ({
    },
 
    title: {
-      fontSize: "18px",
-      marginBottom: theme.spacing(2),
-      textAlign: "center"
+      color: "white",
+      fontSize: "26px",
+      fontWeight: "600",
+      textAlign: "left",
+      fontFamily: "BebasNeue",
+      textTransform: "uppercase",
+      letterSpacing: "2px",
+      lineHeight: 1,
+      // padding: theme.spacing(2),
+      paddingTop: "5px",
+      paddingRight: theme.spacing(1),
+
+      [theme.breakpoints.up("md")]: {
+         "& span": {
+            fontSize: "20px",
+            fontWeight: "normal",
+            textTransform: "none",
+            letterSpacing: "1px",
+            marginLeft: theme.spacing(1.5)
+         }
+
+      }
+   },
+
+   titleBar: {
+      backgroundColor: theme.palette.secondary.main,
+      borderBottom: "7px white solid",
+      padding: theme.spacing(2),
+      width: "100%"
    },
 
    yearTitle: {
@@ -154,9 +211,10 @@ const modalCardStyles = makeStyles((theme) => ({
       [theme.breakpoints.up("md")]: {
          marginBottom: "0",
          marginTop: "0",
+         order: "1",
          textAlign: "left"
       }
-   },
+   }
 }));
 
-export default modalCardStyles;
+export default useModalCardStyles;

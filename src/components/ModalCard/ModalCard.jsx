@@ -1,106 +1,162 @@
 import {Box, Typography} from "@material-ui/core";
+import React, {useEffect, useState} from "react";
 import CloseIcon from "@material-ui/icons/Close";
-import PropTypes from "prop-types";
-import React, { useState } from "react";
 import MovieRatings from "../MovieRatings/MovieRatings";
-import sharedStyles from "../../styles/shared";
-import { useEffect } from "react";
-import modalCardStyles from "../../styles/modalCardStyles";
+import PropTypes from "prop-types";
+import useModalCardStyles from "../../styles/modalCardStyles";
+import useSharedStyles from "../../styles/shared";
 
-const ModalCard = (props) => {
-   const {
-      closeModal,
-      movie,
-   } = props;
-
+const ModalCard = ({closeModal, movie}) => {
    ModalCard.propTypes = {
       closeModal: PropTypes.func,
-      movie: PropTypes.object,
+      movie: PropTypes.object
    };
 
-   const getWidth = () => document.documentElement.clientWidth / 2;
+   const getWidth = () => document.documentElement.clientWidth;
+   const getHeight = () => document.documentElement.clientHeight;
 
-   const [halfClientWidth, setHalfClientWidth] = useState(getWidth())
+   const getModalHeight = () => {
+      const {height} = clientDimensions;
+
+      if (!medScreenPlus) {
+         if (height > 550) {
+            return height * 0.8;
+         }
+
+         return height;
+      }
+
+      return 465;
+   };
+
+   const getModalWidth = () => {
+      const {width} = clientDimensions;
+
+      if (width < 400) {
+         return width;
+      }
+
+      if (width < 600) {
+         return width * 0.9;
+      }
+
+      if (!medScreenPlus) {
+         return width * 0.8;
+      }
+
+      return 750;
+   };
+
+   const [clientDimensions, setClientDimensions] = useState({
+      width: getWidth(),
+      height: getHeight()
+   });
+   const [isLoading, setIsLoading] = useState(true);
+
+   const medScreenPlus = clientDimensions.width >= 960;
+
+   const classes = {
+      ...useSharedStyles(),
+      ...useModalCardStyles({
+         modalHeight: getModalHeight(),
+         modalWidth: getModalWidth(),
+         halfClientWidth: clientDimensions.width / 2
+      })
+   };
 
    useEffect(() => {
       const onResize = () => {
          let timer;
+
          return () => {
-           if (timer) {
-            clearTimeout(timer);
-           }
-           timer = setTimeout(() => setHalfClientWidth(getWidth()), 100);
+            if (timer) {
+               clearTimeout(timer);
+            }
+
+            timer = setTimeout(() => setClientDimensions({
+               width: getWidth(),
+               height: getHeight()
+            }), 100);
          };
-      }
+      };
 
-      window.addEventListener("resize", onResize())
+      window.addEventListener("resize", onResize());
 
-      return () => window.removeEventListener("resize", onResize())
-   }, [])
+      return () => window.removeEventListener("resize", onResize());
+   }, []);
 
-   const minModalWidth = 300;
-   const minModalHeight = 465;
-
-   const classes = {
-      ...modalCardStyles({minModalHeight, minModalWidth, halfClientWidth}), 
-      ...sharedStyles()
-   };
-
-   const [isLoading, setIsLoading] = useState(true);
-
-   const capitalise = word => word ? word.charAt(0).toUpperCase() + word.slice(1) : "";
+   const capitalise = text => text ? text.charAt(0).toUpperCase() + text.slice(1) : "";
 
    return (
       <>
-         <article className={classes.modalCard}>
-            <Typography className={`${classes.textSpacing} ${classes.title}`} variant="h6">
-               <Box lineHeight={1}>
+         <article className={`${classes.modalCard}`}>
+            <div className={`${classes.flexRow} ${classes.titleBar}`}>
+               <Typography
+                  className={`${classes.title}`}
+                  variant="h6"
+               >
+                  {/* <Box lineHeight={1}> */}
                   {movie.Title}
-               </Box>
-            </Typography>
-            <CloseIcon
-               className={classes.closeIcon}
-               onClick={() => closeModal()}
-            />
-            <div className={classes.modalContent}>
-               {movie.Poster !== "N/A" && 
-                  <img
-                     className={`${classes.cardImg} ${classes.modalImg}`}
-                     src={movie.Poster}
-                     alt={movie.Title}
-                     onLoad={() => setIsLoading(false)}
-                  />
+                  {medScreenPlus &&
+                        <span>({movie.Year} {capitalise(movie.Type)})</span>
+                  }
+                  {/* </Box> */}
+               </Typography>
+               <CloseIcon
+                  fontSize="inherit"
+                  className={classes.closeIcon}
+                  onClick={() => closeModal()}
+               />
+            </div>
+            <div className={`${classes.modalContent} ${classes.customScrollbar}`}>
+               {movie.Poster !== "N/A" &&
+                     <img
+                        className={`${classes.cardImg} modalImg`}
+                        src={movie.Poster}
+                        alt={movie.Title}
+                        onLoad={() => setIsLoading(false)}
+                     />
                }
-               {!isLoading && 
-                  <div className={classes.modalBody}>
-                     <Typography
-                        className={`${classes.textBody} ${classes.yearTitle}`}
-                        component="p">
-                           ({movie.Year} - {capitalise(movie.Type)})
-                     </Typography>
-                     <div>
-                        <Typography
-                           className={classes.textHead}
-                           component="p">
-                              Plot
-                        </Typography>
-                        <Typography
-                           className={`${classes.textBody} ${classes.plotTxt}`}
-                           component="p">
-                           {capitalise(movie.Plot)}
-                        </Typography>
+               {!isLoading &&
+                     <div className={classes.modalBody}>
+                        {!medScreenPlus && (
+                           <Typography
+                              className={`${classes.textBody} ${classes.yearTitle}`}
+                              component="p">
+                                 ({movie.Year} - {capitalise(movie.Type)})
+                           </Typography>
+                        )}
+                        <div className={classes.plotCont}>
+                           <Typography
+                              className={classes.textHead}
+                              component="p">
+                                 Plot
+                           </Typography>
+                           <Typography
+                              className={`${classes.textBody} ${classes.plotTxt} ${classes.customScrollbar}`}
+                              component="p">
+                              {capitalise(movie.Plot)}
+                           </Typography>
+                        </div>
+                        {movie.Ratings &&
+                        // <div style={{
+                        //    display: "flex",
+                        //    flexDirection: "row",
+                        //    justifyContent: "space-between",
+                        //    alignItems: "center"
+                        // }}>
+                        //    <p>Ratings: </p>
+                           <MovieRatings
+                              styles={classes.scoresModal}
+                              ratings={movie.Ratings}
+                              title={movie.title}
+                              imdbId={movie.imdbID}
+                           />
+                        // </div>
+                        }
                      </div>
-                  </div>
                }
             </div>
-            {!isLoading && movie.Ratings &&
-               <MovieRatings 
-                  styles={classes.scoresModal}
-                  ratings={movie.Ratings}
-                  title={movie.title}
-                  imdbId={movie.imdbID}
-               />
-            }
          </article>
       </>
    );

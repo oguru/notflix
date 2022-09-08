@@ -1,33 +1,29 @@
-import {Backdrop, Box, Card, Fade, Modal, Typography} from "@material-ui/core";
-import React, {useEffect, useState} from "react";
-import ModalCard from "../ModalCard";
-import PropTypes from "prop-types";
-import {makeStyles} from "@material-ui/core/styles";
-import posterPlaceholder from "../../assets/poster-placeholder.png";
+import React, {useState} from "react";
+import Card from "@material-ui/core/Card";
 import MovieRatings from "../MovieRatings/MovieRatings";
-import useMovieCardStyles from "../../styles/movieCardStyles";
-import sharedStyles from "../../styles/shared";
+import PropTypes from "prop-types";
+import Typography from "@material-ui/core/Typography";
+import posterPlaceholder from "../../assets/poster-placeholder.png";
 
 const MovieCard = (props) => {
    const {
+      classes,
       detailMode,
       handleShowModal,
-      movie,
-      classes
+      movie
    } = props;
 
    MovieCard.propTypes = {
       classes: PropTypes.object,
       detailMode: PropTypes.bool,
       handleShowModal: PropTypes.func,
-      movie: PropTypes.object,
+      movie: PropTypes.object
    };
 
    const [hovered, setHovered] = useState(false);
+   const [noPoster, setNoPoster] = useState(movie.Poster === "N/A");
 
-
-   const hasPoster = movie.Poster !== "N/A"
-   const cardExpand = hovered && detailMode ? "cardExpandOn" : "cardExpandOff";
+   const cardExpandClass = hovered && detailMode ? "cardExpandOn" : "cardExpandOff";
 
    return (
       <>
@@ -35,41 +31,40 @@ const MovieCard = (props) => {
             onMouseEnter={() => setHovered(true)}
             onMouseLeave={() => setHovered(false)}
             onClick={() => handleShowModal()}
-            elevation={1} 
-            className={`${classes.movieCard} ${classes[cardExpand]}`}
+            elevation={1}
+            className={`${classes.movieCard} ${classes[cardExpandClass]}`}
          >
             <div className={classes.flexColumn}>
-               {!hasPoster && (
+               {noPoster && (
                   <div className={`${classes.noPosterStyle} ${classes.flexColumn}`}>
-                        <h3>{movie.Title}</h3>
-                        <p>(No poster)</p>
+                     <h3>{movie.Title}</h3>
+                     <Typography component="p">
+                        (No poster)
+                     </Typography>
                   </div>
                )}
-               <img 
-                  className={classes.cardImg} 
-                  src={hasPoster ? movie.Poster : posterPlaceholder} 
+               <img
+                  className={classes.cardImg}
+                  src={noPoster ? posterPlaceholder : movie.Poster}
+                  onError={() => setNoPoster(true)}
                   alt={movie.Title}
                />
             </div>
             <div className={classes.cardBottom}>
                <div className={`${classes.textSpacing} ${classes.title}`}>
                   <Typography variant="h6">
-                     {/* <Box lineHeight={1}> */}
-                        {`${movie.Title} (${movie.Year})`}
-                     {/* </Box> */}
+                     {`${movie.Title} (${movie.Year})`}
                   </Typography>
                   <Typography className={classes.genre}>
-                     {/* <Box lineHeight={1}> */}
-                        {movie.Genre}
-                     {/* </Box> */}
+                     {movie.Genre}
                   </Typography>
                </div>
-               {movie.Ratings?.length && detailMode &&
-                  <MovieRatings 
-                     ratings={movie.Ratings} 
+               {movie.Ratings?.length && detailMode ?
+                  <MovieRatings
+                     ratings={movie.Ratings}
                      title={movie.title}
                      imdbId={movie.imdbID}
-                  />
+                  /> : null
                }
             </div>
          </Card>

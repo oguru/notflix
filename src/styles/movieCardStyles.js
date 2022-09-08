@@ -1,4 +1,4 @@
-import { makeStyles } from "@material-ui/core";
+import {makeStyles} from "@material-ui/core";
 
 const useMovieCardStyles = makeStyles((theme) => ({
    cardBottom: {
@@ -17,7 +17,7 @@ const useMovieCardStyles = makeStyles((theme) => ({
       transform: "scale(1.075)",
       transition: "0.2s ease-in-out"
    },
-   
+
    flexColumn: {
       alignItems: "center",
       display: "flex",
@@ -60,10 +60,12 @@ const useMovieCardStyles = makeStyles((theme) => ({
          filter: "drop-shadow(0 3px 3px grey)",
          transform: "translate(0, -3px)"
       },
+
       "a": {
          border: "none",
          outline: "0"
       },
+
       height: theme.spacing(3),
       transition: "0.2s"
    },
@@ -71,7 +73,7 @@ const useMovieCardStyles = makeStyles((theme) => ({
    scoreText: {
       fontSize: "14px"
    },
-   
+
    scores: {
       alignItems: "center",
       display: "flex",
@@ -84,7 +86,14 @@ const useMovieCardStyles = makeStyles((theme) => ({
       flexDirection: "column",
       fontSize: "16px",
       height: "105px",
-      justifyContent: "center"
+      justifyContent: "center",
+
+      "& h6": {
+         display: "-webkit-box",
+         "-webkit-box-orient": "vertical",
+         "-webkit-line-clamp": 2,
+         overflow: "hidden"
+      }
    }
 }));
 

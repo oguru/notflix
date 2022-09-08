@@ -1,315 +1,243 @@
-import React, {useEffect, useReducer, useState, useRef} from "react";
-import {Modal, Slide, Snackbar, useScrollTrigger} from "@material-ui/core";
+import React, {useReducer, useState} from "react";
+import {Slide, Snackbar} from "@material-ui/core";
 import BottomScrollListener from "react-bottom-scroll-listener";
 import Dashboard from "./containers/Dashboard";
 import Navbar from "./components/Navbar";
-import {makeStyles} from "@material-ui/core/styles";
+import useAppStyles from "./styles/appStyles";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 
-let addingPage = false;
-
 const initialState = {
-   searchTerm: "", 
-   page: 1, 
-   detailMode: true, 
-   movieResults: {results: [], totalResults: 0},
-   results: [], 
+   searchTerm: "",
+   page: 1,
+   detailMode: true,
+   results: [],
    totalResults: 0,
-   snackbar: {
-      detail: false,
-      fast: false
-   }
-}
+   snackbar: false
+};
 
-function reducer(state, action) {
+const reducer = (state, action) => {
    let results;
    let page;
 
    switch (action.type) {
-      case 'setMovies':
+      case "setMovies":
+         // if new search
          if (action.searchTerm) {
-            // new search
-            results = action.results
-            page = 1
+            results = action.results;
+            page = 1;
 
             return {
-               ...state, 
-               searchTerm: action.searchTerm, 
-               page, 
-               results, 
+               ...state,
+               searchTerm: action.searchTerm,
+               page,
+               results,
                totalResults: action.totalResults
             };
          }
-         // updating existing results
-         results = action.results
 
-         return {...state, results};
-      case 'addPage': 
-         results = [...state.results, ...action.results]
+         // if updating existing results
+         results = action.results;
+
+         return {...state,
+            results};
+      case "addPage":
+         results = [...state.results, ...action.results];
          page = state.page + 1;
-         return {...state, page, results};
-      case 'toggleDetail':
-         results = action.results || state.results
-         return {...state, detailMode: !state.detailMode, results, snackbar: {
-            detail: !state.detailMode,
-            fast: state.detailMode
-         }}
-      case 'closeSnackbar':
-         return {...state, snackbar: {
-            detail: false,
-            fast: false
-         }}
-      case 'reset':
-         return {initialState, detailMode: state.detailMode}
-     default:
-       throw new Error();
+         return {
+            ...state,
+            page,
+            results
+         };
+      case "toggleDetail":
+         results = action.results || state.results;
+         return {
+            ...state,
+            detailMode: !state.detailMode,
+            results,
+            snackbar: true
+         };
+      case "closeSnackbar":
+         return {...state,
+            snackbar: false};
+      case "reset":
+         return {...initialState,
+            detailMode: state.detailMode};
+      default:
+         throw new Error();
    }
- }
+};
 
 const App = () => {
-   const [movieState, dispatch] = useReducer(reducer, initialState);
-   console.log('movieState:', movieState)
    const [isLoading, setIsLoading] = useState(false);
-   
-   const [searchTxt, setSearchTxt] = useState("time");
-   const xsScreen = useMediaQuery('(max-width:599px)');
-
-   const useStyles = makeStyles((theme) => ({
-      app: {
-         backgroundColor: theme.palette.background.default,
-         height: "100%",
-         maxWidth: "100vw",
-         minHeight: "100vh",
-         paddingBottom: theme.spacing(2)
-      },
-      dashboard: {
-         padding: `0 ${theme.spacing(2)}px`,
-         paddingTop: theme.spacing(10)
-      },
-      sBarDetailMode: {backgroundColor: theme.palette.secondary.main},
-      sBarFastMode: {backgroundColor: theme.palette.secondary.dark},
-      snackBar: {
-         bottom: theme.spacing(2),
-         "& .MuiSnackbarContent-root": {
-            backgroundColor: movieState.detailMode ?
-               "rgba(229, 9, 20, 1)" : 
-               "rgba(43, 89, 195, 1)",
-            color: "white",
-            justifyContent: "center",
-            minWidth: "200px",
-         }
-      },
-   }));
-
-   const classes = useStyles();
-
-   // const appRef = useRef(null);
-
-/*    useEffect(() => {
-      const threshold = 0;
-      let lastScrollY = window.pageYOffset;
-      let ticking = false;
-
-      // const updateScrollDir = () => {
-      //    const scrollY = window.pageYOffset;
-
-      //    if (Math.abs(scrollY - lastScrollY) < threshold) {
-      //       ticking = false;
-
-      //       return;
-      //    }
-
-      //    setScrollDir(scrollY > lastScrollY ? "down" : "up");
-      //    lastScrollY = scrollY > 0 ? scrollY : 0;
-      //    ticking = false;
-      // };
-
-      window.addEventListener("scroll", onScroll);
-
-   }, []); */
-
-   /* change detail mode - if (detailMode && movieState.searchTerm === query && !movieState.detailedResults) {
-      fetchData detailed using store movies
-      dispatch setMovies
-   } else if () {
-      
-   }*/
-
-   /*  */
-   // if movies exist, don't set to store
-
-   const handleSearch = async ({query}) => {
-      const trimmedQuery = query;
-      if (!trimmedQuery) {
-         dispatch({type: "reset"})
-         return;
-      }
-      setIsLoading(true);
-      let results = await fetchData({query: trimmedQuery, param: "s"})
-      
-      if (movieState.detailMode) {
-         Promise.all(results.results).then(res => {
-            dispatch({
-               type: "setMovies", 
-               results: res, 
-               totalResults: results.totalResults, 
-               searchTerm: trimmedQuery
-            })
-            setIsLoading(false);
-         })
-      } else {
-         dispatch({
-            type: "setMovies", 
-            results: results.Search, 
-            totalResults: results.totalResults, 
-            searchTerm: trimmedQuery
-         })
-         setIsLoading(false);
-      }
-   }
+   const [movieState, dispatch] = useReducer(reducer, initialState);
+   const [searchTxt, setSearchTxt] = useState("");
+   const xsScreen = useMediaQuery("(max-width:599px)");
+   const classes = useAppStyles({detailMode: movieState.detailMode});
 
    const fetchData = async ({query, param, page = 1}) => {
-      let results = await fetch(`https://www.omdbapi.com/?apikey=a6790f0e&${param}=${query}&page=${page}&plot=full`).then(res => res.json())
+      const results = await fetch(`https://www.omdbapi.com/?apikey=a6790f0e&${param}=${query}&page=${page}&plot=full`)
+         .then(res => res.json());
 
-      let detailedResults = [];
+      const detailedResults = [];
 
-      if (movieState.detailMode && param === 's') {
-
-         // detailedResults = results.Search.map(res => fetchData({query: res.imdbID, param: "i"}))
-
+      if (movieState.detailMode &&
+         param === "s" &&
+         !results.Error
+      ) {
          for (let i = 0; i < results.Search.length; i++) {
-            const detailedResult = fetchData({query: results.Search[i].imdbID, param: "i"})
+            const detailedResult = fetchData({
+               query: results.Search[i].imdbID,
+               param: "i"
+            });
             detailedResults.push(detailedResult);
          }
+
+         return {
+            results: detailedResults,
+            totalResults: results.totalResults
+         };
       }
 
-      if (movieState.detailMode && param === 's') {
-         return {results: detailedResults, totalResults: results.totalResults};
-      } 
-      // else if (results.Search) {
-      //    return {results: results.Search, totalResults: results.totalResults}
-      // }
-      
       return results;
    };
 
-   // const reInitSearch = () => {
-   //    setMovieName();
-   //    setMovieResults([]);
-   //    setMovieDetails([]);
-   //    setPage(1);
-   // };
+   const handleSearch = async ({query}) => {
+      const trimmedQuery = query.trim();
+
+      if (movieState.searchTerm) {
+         dispatch({type: "reset"});
+      }
+
+      if (!trimmedQuery) {
+         return;
+      }
+
+      setIsLoading(true);
+
+      const results = await fetchData({
+         query: trimmedQuery,
+         param: "s"
+      });
+
+      if (!results.Error) {
+         if (movieState.detailMode) {
+            Promise.all(results.results).then(res => {
+               dispatch({
+                  type: "setMovies",
+                  results: res,
+                  totalResults: results.totalResults,
+                  searchTerm: trimmedQuery
+               });
+               setIsLoading(false);
+            });
+         } else {
+            dispatch({
+               type: "setMovies",
+               results: results.Search,
+               totalResults: results.totalResults,
+               searchTerm: trimmedQuery
+            });
+            setIsLoading(false);
+         }
+      } else {
+         // if error
+         dispatch({
+            type: "setMovies",
+            results: [],
+            totalResults: 0,
+            searchTerm: trimmedQuery
+         });
+         setIsLoading(false);
+      }
+   };
 
    const handleToggleDetailMode = async () => {
       let updatedResults;
+
       // if turning detail mode on with current results
-      if (!movieState.detailMode && movieState.searchTerm && movieState.totalResults) {
+      if (!movieState.detailMode &&
+         movieState.searchTerm &&
+         movieState.totalResults
+      ) {
          let changes = false;
-         const results = movieState.results.map(
-            (res) => {
+         const results = movieState.results.map((res) => {
             if (res.Ratings) {
                return res;
-            } else {
-               if (!changes) {
-                  changes = true
-               }
-               return fetchData({query: res.imdbID, param: "i"});
             }
+
+            if (!changes) {
+               changes = true;
+            }
+
+            // get detailed movie results
+            return fetchData({
+               query: res.imdbID,
+               param: "i"
+            });
+
          });
 
          if (changes) {
             await Promise.all(results).then(res => {
-               updatedResults = res
-            })
+               updatedResults = res;
+            });
          }
-      } 
-      
-      dispatch({type: "toggleDetail", results: updatedResults})
+      }
+
+      dispatch({type: "toggleDetail",
+         results: updatedResults});
    };
 
-   const handleGetSingleMovieDetails = async (index) => {
-      const movieResults = {...movieState.results};
-      const movie = movieResults.results[index];
-      const movieDetails = await fetchData({query: movie.imdbID, param: "i"})
-      movieResults.splice(index, 1, movieDetails)
+   const updateSingleMovieDetails = async (index) => {
+      const movieResults = [...movieState.results];
+      const movie = movieResults[index];
+      const movieDetails = await fetchData({
+         query: movie.imdbID,
+         param: "i"
+      });
+      movieResults.splice(index, 1, movieDetails);
 
-      dispatch({type: "setMovies", results: movieResults, searchTerm: movieState.searchTerm});
-   }
+      dispatch({type: "setMovies",
+         results: movieResults});
+   };
 
    const addPage = () => {
-      console.log('addPage triggered')
-      if (isLoading) return;
+      if (isLoading) {
+         return;
+      }
 
       if (movieState.totalResults > movieState.results.length) {
          setIsLoading(true);
 
-         let results = fetchData({
-            query: movieState.searchTerm, 
-            param: "s", 
-            page: movieState.page + 1
-         })
-      
-         Promise.resolve(results).then(res => {
+         const newPageNum = movieState.page + 1;
 
+         const results = fetchData({
+            query: movieState.searchTerm,
+            param: "s",
+            page: newPageNum
+         });
+
+         Promise.resolve(results).then(res => {
             if (movieState.detailMode) {
                Promise.all(res.results).then(detailedRes => {
                   dispatch({
-                     type: "addPage", 
-                     results: detailedRes, 
-                     page: movieState.page + 1
-                  })
+                     type: "addPage",
+                     results: detailedRes,
+                     page: newPageNum
+                  });
                   setIsLoading(false);
-               })
+               });
             } else {
-
                dispatch({
-                  type: "addPage", 
-                  results: res.Search, 
-                  page: movieState.page + 1
-               })
+                  type: "addPage",
+                  results: res.Search,
+                  page: newPageNum
+               });
                setIsLoading(false);
             }
-         })
-         // if (movieState.detailMode) {
-         //    Promise.resolve(results)
-         //    Promise.all(results.results).then(res => {
-         //       dispatch({
-         //          type: "addPage", 
-         //          results: res, 
-         //          page: movieState.page + 1
-         //       })
-         //       setIsLoading(false);
-         //    })
-         // } else {
-         //    Promise.resolve(results).then(res => {
-
-         //       dispatch({
-         //          type: "addPage", 
-         //          results: res.Search, 
-         //          page: movieState.page + 1
-         //       })
-         //       setIsLoading(false);
-         //    })
-         //    // dispatch({
-         //    //    type: "addPage", 
-         //    //    results: results.Search, 
-         //    //    page: movieState.page + 1
-         //    // })
-         //    // setIsLoading(false);
-         // }
+         });
       }
    };
-
-   const snackbar = movieState.detailMode ?
-      {
-         key: "detail",
-         message: "Detail mode enabled",
-         mode: movieState.snackbar.detail
-      } : {
-         key: "fast",
-         message: "Fast mode enabled",
-         mode: movieState.snackbar.fast
-      };
 
    return (
       <>
@@ -325,14 +253,18 @@ const App = () => {
             <section className={classes.dashboard}>
                <Dashboard
                   detailMode={movieState.detailMode}
-                  handleGetSingleMovieDetails={handleGetSingleMovieDetails}
+                  updateSingleMovieDetails={updateSingleMovieDetails}
                   isLoading={isLoading}
                   movieResults={movieState.results}
+                  searchError={
+                     Boolean(movieState.searchTerm && !movieState.totalResults)
+                  }
                   searchTxt={searchTxt}
                   xsScreen={xsScreen}
                />
             </section>
             <BottomScrollListener
+               triggerOnNoScroll={movieState.totalResults}
                debounceOptions={200}
                offset={250}
                onBottom={addPage}
@@ -341,14 +273,14 @@ const App = () => {
          <Snackbar
             TransitionComponent={Slide}
             autoHideDuration={1500}
-            classes= {{
-               root: classes.snackBar
-            }}
-            message={snackbar.message}
-            key={snackbar.key}
-            onClose={() => dispatch({type: "closeSnackbar"})
-         }
-            open={snackbar.mode}
+            classes={{root: classes.snackBar}}
+            message={movieState.detailMode ?
+               "Detail mode enabled" :
+               "Fast mode enabled"
+            }
+            key={movieState.detailMode ? "d" : "f"}
+            onClose={() => dispatch({type: "closeSnackbar"})}
+            open={movieState.snackbar}
          />
       </>
    );
