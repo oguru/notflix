@@ -1,256 +1,287 @@
-import "./App.module.scss";
-import React, {useEffect, useState} from "react";
+import React, {useReducer, useState} from "react";
 import {Slide, Snackbar} from "@material-ui/core";
 import BottomScrollListener from "react-bottom-scroll-listener";
 import Dashboard from "./containers/Dashboard";
 import Navbar from "./components/Navbar";
-import {makeStyles} from "@material-ui/core/styles";
+import useAppStyles from "./styles/appStyles";
+import useMediaQuery from "@material-ui/core/useMediaQuery";
+
+const initialState = {
+   searchTerm: "",
+   page: 1,
+   detailMode: true,
+   results: [],
+   totalResults: 0,
+   snackbar: false
+};
+
+const reducer = (state, action) => {
+   let results;
+   let page;
+
+   switch (action.type) {
+      case "setMovies":
+         // if new search
+         if (action.searchTerm) {
+            results = action.results;
+            page = 1;
+
+            return {
+               ...state,
+               searchTerm: action.searchTerm,
+               page,
+               results,
+               totalResults: action.totalResults
+            };
+         }
+
+         // if updating existing results
+         results = action.results;
+
+         return {...state,
+            results};
+      case "addPage":
+         results = [...state.results, ...action.results];
+         page = state.page + 1;
+         return {
+            ...state,
+            page,
+            results
+         };
+      case "toggleDetail":
+         results = action.results || state.results;
+         return {
+            ...state,
+            detailMode: !state.detailMode,
+            results,
+            snackbar: true
+         };
+      case "closeSnackbar":
+         return {...state,
+            snackbar: false};
+      case "reset":
+         return {...initialState,
+            detailMode: state.detailMode};
+      default:
+         throw new Error();
+   }
+};
 
 const App = () => {
-   const [detailMode, setDetailMode] = useState(true);
-   const [initState, changeInit] = useState(true);
-   const [modalData, storeModal] = useState({});
-   const [movieDetails, setMovieDetails] = useState([]);
-   const [movieName, setMovieName] = useState("");
-   const [movieResults, setMovieResults] = useState([]);
-   const [page, setPage] = useState(1);
-   const [scrollDir, setScrollDir] = useState("up");
-   const [snackbarState, toggleSnackbar] = useState({
-      detail: false,
-      fast: false
-   });
-   const [searchOpen, toggleSearch] = useState(false);
+   const [isLoading, setIsLoading] = useState(false);
+   const [movieState, dispatch] = useReducer(reducer, initialState);
    const [searchTxt, setSearchTxt] = useState("");
-   const [windowWidth, setWindowWidth] = useState();
+   const xsScreen = useMediaQuery("(max-width:599px)");
+   const classes = useAppStyles({detailMode: movieState.detailMode});
 
-   const [fetchCount, setFetchCount] = useState(0);
+   const fetchData = async ({query, param, page = 1}) => {
+      const path = `https://www.omdbapi.com/?apikey=a6790f0e&${param}=${query}&page=${page}&plot=full`;
 
-   const useStyles = makeStyles((theme) => ({
-      app: {
-         backgroundColor: theme.palette.background.default,
-         height: "100%",
-         maxWidth: "100vw",
-         minHeight: "100vh",
-         paddingBottom: theme.spacing(2)
-      },
-      dashboard: {
-         padding: `0 ${theme.spacing(2)}px`,
-         paddingTop: theme.spacing(10)
-      },
-      sBarDetailMode: {backgroundColor: theme.palette.secondary.main},
-      sBarFastMode: {backgroundColor: theme.palette.secondary.dark},
-      snackBar: {bottom: theme.spacing(2)}
-   }));
+      const results = await fetch(path).then(res => res.json());
 
-   const snackbarBackground = detailMode ?
-      "rgba(229, 9, 20, 1)" : "rgba(43, 89, 195, 1)";
+      const detailedResults = [];
 
-   const snackbarStyles = makeStyles({
-      root: {
-         backgroundColor: snackbarBackground,
-         color: "white",
-         justifyContent: "center",
-         minWidth: "200px"
-      }
-   }, {name: "MuiSnackbarContent"});
-
-   const classes = useStyles();
-
-   snackbarStyles();
-
-   useEffect(() => {
-      if (movieName && page > 1) {
-         fetchData(movieName);
-      } else if (movieName) {
-         fetchData(movieName);
-      }
-
-   }, [movieName, detailMode, page]);
-
-   useEffect(() => {
-      const getMovieDetails = results => {
-         results.forEach(result => fetchData(result.imdbID, "id"));
-      };
-
-      if (movieResults.length > 0
-            && detailMode
-            && movieResults !== "error"
+      if (movieState.detailMode &&
+         param === "s" &&
+         !results.Error
       ) {
-         getMovieDetails(movieResults);
-      }
-
-   }, [movieResults]);
-
-   useEffect(() => {
-      const threshold = 0;
-      let lastScrollY = window.pageYOffset;
-      let ticking = false;
-
-      const updateScrollDir = () => {
-         const scrollY = window.pageYOffset;
-
-         if (Math.abs(scrollY - lastScrollY) < threshold) {
-            ticking = false;
-
-            return;
+         for (let i = 0; i < results.Search.length; i++) {
+            const detailedResult = fetchData({
+               query: results.Search[i].imdbID,
+               param: "i"
+            });
+            detailedResults.push(detailedResult);
          }
 
-         setScrollDir(scrollY > lastScrollY ? "down" : "up");
-         lastScrollY = scrollY > 0 ? scrollY : 0;
-         ticking = false;
-      };
-
-      const onScroll = () => {
-         if (!ticking) {
-            window.requestAnimationFrame(updateScrollDir);
-            ticking = true;
-         }
-      };
-
-      window.addEventListener("scroll", onScroll);
-
-   }, []);
-
-   useEffect(() => {
-      const getWidth = () => setWindowWidth(window.innerWidth);
-
-      window.addEventListener("resize", getWidth);
-      getWidth();
-   }, []);
-
-   const scrollbarWidth =
-    windowWidth - document.documentElement.clientWidth;
-
-   const reInitSearch = () => {
-      setMovieName();
-      setMovieResults([]);
-      setMovieDetails([]);
-      setPage(1);
-   };
-
-   const changeDetailMode = () => {
-      reInitSearch();
-      detailMode ?
-         toggleSnackbar({
-            detail: false,
-            fast: true
-         }) :
-         toggleSnackbar({
-            detail: true,
-            fast: false
-         });
-      setDetailMode(!detailMode);
-   };
-
-   const getMovieName = (name) => {
-      if (initState) {
-         changeInit(false);
+         return {
+            results: detailedResults,
+            totalResults: results.totalResults
+         };
       }
 
-      reInitSearch();
-      setMovieName(name.trim());
-
-      if (searchOpen) {
-         toggleSearch(false);
-      }
+      return results;
    };
 
-   const setDetails = (result, type) => {
-      if (type === "id") {
-         if (detailMode) {
-            setMovieDetails(currentMovDetails => [...currentMovDetails, result]);
+   const handleSearch = async ({query}) => {
+      const trimmedQuery = query.trim();
+
+      if (movieState.searchTerm) {
+         dispatch({type: "reset"});
+      }
+
+      if (!trimmedQuery) {
+         return;
+      }
+
+      setIsLoading(true);
+
+      const results = await fetchData({
+         query: trimmedQuery,
+         param: "s"
+      });
+
+      if (!results.Error) {
+         if (movieState.detailMode) {
+            Promise.all(results.results).then(res => {
+               dispatch({
+                  type: "setMovies",
+                  results: res,
+                  totalResults: results.totalResults,
+                  searchTerm: trimmedQuery
+               });
+               setIsLoading(false);
+            });
          } else {
-            storeModal(result);
-         }
-      } else if (result.Search && !type) {
-         if (detailMode) {
-            setMovieResults(result.Search);
-            setFetchCount((currentFetch) => currentFetch + 1);
-         } else {
-            setMovieResults(() => [...movieResults.concat(...result.Search)]);
+            dispatch({
+               type: "setMovies",
+               results: results.Search,
+               totalResults: results.totalResults,
+               searchTerm: trimmedQuery
+            });
+            setIsLoading(false);
          }
       } else {
-         setMovieResults("error");
+         // if error
+         dispatch({
+            type: "setMovies",
+            results: [],
+            totalResults: 0,
+            searchTerm: trimmedQuery
+         });
+         setIsLoading(false);
       }
    };
 
-   const fetchData = (input, type) => {
-      const parameter = type === "id" ? "i" : "s";
-      fetch(`https://www.omdbapi.com/?apikey=a6790f0e&${parameter}=${input}&page=${page}&plot=full`)
-         .then(result => result.json())
-         .then(result => setDetails(result, type))
-         .catch(err => console.log(err));
+   const handleToggleDetailMode = async () => {
+      let updatedResults;
+
+      // if turning detail mode on with current results
+      if (!movieState.detailMode &&
+         movieState.searchTerm &&
+         movieState.totalResults
+      ) {
+         let changes = false;
+         const results = movieState.results.map((res) => {
+            if (res.Ratings) {
+               return res;
+            }
+
+            if (!changes) {
+               changes = true;
+            }
+
+            // get detailed movie results
+            return fetchData({
+               query: res.imdbID,
+               param: "i"
+            });
+
+         });
+
+         if (changes) {
+            await Promise.all(results).then(res => {
+               updatedResults = res;
+            });
+         }
+      }
+
+      dispatch({type: "toggleDetail",
+         results: updatedResults});
+   };
+
+   const updateSingleMovieDetails = async (index) => {
+      const movieResults = [...movieState.results];
+      const movie = movieResults[index];
+      const movieDetails = await fetchData({
+         query: movie.imdbID,
+         param: "i"
+      });
+      movieResults.splice(index, 1, movieDetails);
+
+      dispatch({type: "setMovies",
+         results: movieResults});
    };
 
    const addPage = () => {
-      const searchType = detailMode ? movieDetails : movieResults;
+      if (isLoading) {
+         return;
+      }
 
-      if (searchType.length / page % 10 === 0) {
-         setPage(page + 1);
+      if (movieState.totalResults > movieState.results.length) {
+         setIsLoading(true);
+
+         const newPageNum = movieState.page + 1;
+
+         const results = fetchData({
+            query: movieState.searchTerm,
+            param: "s",
+            page: newPageNum
+         });
+
+         Promise.resolve(results).then(res => {
+            if (movieState.detailMode) {
+               Promise.all(res.results).then(detailedRes => {
+                  dispatch({
+                     type: "addPage",
+                     results: detailedRes,
+                     page: newPageNum
+                  });
+                  setIsLoading(false);
+               });
+            } else {
+               dispatch({
+                  type: "addPage",
+                  results: res.Search,
+                  page: newPageNum
+               });
+               setIsLoading(false);
+            }
+         });
       }
    };
 
-   const snackbar = detailMode ?
-      {
-         key: "detail",
-         message: "Detail mode enabled",
-         mode: snackbarState.detail
-      } : {
-         key: "fast",
-         message: "Fast mode enabled",
-         mode: snackbarState.fast
-      };
-
    return (
       <>
-         <section
-            className={classes.app}
-            onClick={() => searchOpen ? toggleSearch(false) : ""}>
+         <section className={classes.app}>
             <Navbar
-               changeDetailMode={changeDetailMode}
-               detailMode={detailMode}
-               getMovieName={getMovieName}
-               scrollDir={scrollDir}
-               searchOpen={searchOpen}
+               handleToggleDetailMode={handleToggleDetailMode}
+               detailMode={movieState.detailMode}
+               handleSubmitSearch={handleSearch}
+               isLoading={isLoading}
                searchTxt={searchTxt}
                setSearchTxt={setSearchTxt}
-               toggleSearch={toggleSearch}
-               windowWidth={windowWidth} />
+               xsScreen={xsScreen} />
             <section className={classes.dashboard}>
                <Dashboard
-                  detailMode={detailMode}
-                  fetchData={fetchData}
-                  initState={initState}
-                  modalData={modalData}
-                  movieDetails={movieDetails}
-                  movieName={Boolean(movieName)}
-                  movieResults={movieResults}
-                  scrollbarWidth={scrollbarWidth}
+                  detailMode={movieState.detailMode}
+                  updateSingleMovieDetails={updateSingleMovieDetails}
+                  isLoading={isLoading}
+                  movieResults={movieState.results}
+                  searchError={
+                     Boolean(movieState.searchTerm && !movieState.totalResults)
+                  }
                   searchTxt={searchTxt}
-                  setMovieDetails={setMovieDetails}
-                  storeModal={storeModal}
-                  windowWidth={windowWidth}
+                  xsScreen={xsScreen}
                />
             </section>
             <BottomScrollListener
+               triggerOnNoScroll={movieState.totalResults}
+               debounceOptions={200}
                offset={250}
-               onBottom={() => addPage()}
+               onBottom={addPage}
             />
          </section>
          <Snackbar
             TransitionComponent={Slide}
             autoHideDuration={1500}
-            classes= {{
-               content: classes.snackBarContent,
-               root: classes.snackBar
-            }}
-            message={snackbar.message}
-            key={snackbar.key}
-            onClose={() => toggleSnackbar({
-               detail: false,
-               fast: false
-            })}
-            open={snackbar.mode}
+            classes={{root: classes.snackBar}}
+            message={movieState.detailMode ?
+               "Detail mode enabled" :
+               "Fast mode enabled"
+            }
+            key={movieState.detailMode ? "d" : "f"}
+            onClose={() => dispatch({type: "closeSnackbar"})}
+            open={movieState.snackbar}
          />
       </>
    );
