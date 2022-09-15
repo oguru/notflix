@@ -1,8 +1,9 @@
-import {Box, Typography} from "@material-ui/core";
 import React, {useEffect, useState} from "react";
 import CloseIcon from "@material-ui/icons/Close";
 import MovieRatings from "../MovieRatings/MovieRatings";
 import PropTypes from "prop-types";
+import Typography from "@material-ui/core/Typography";
+import posterPlaceholder from "../../assets/poster-placeholder.png";
 import useModalCardStyles from "../../styles/modalCardStyles";
 import useSharedStyles from "../../styles/shared";
 
@@ -14,6 +15,15 @@ const ModalCard = ({closeModal, movie}) => {
 
    const getWidth = () => document.documentElement.clientWidth;
    const getHeight = () => document.documentElement.clientHeight;
+   const upperFirst = text => text ? text.charAt(0).toUpperCase() + text.slice(1) : "";
+
+   const [noPoster, setNoPoster] = useState(movie.Poster === "N/A");
+   const [clientDimensions, setClientDimensions] = useState({
+      width: getWidth(),
+      height: getHeight()
+   });
+
+   const medScreenPlus = clientDimensions.width >= 960;
 
    const getModalHeight = () => {
       const {height} = clientDimensions;
@@ -47,14 +57,6 @@ const ModalCard = ({closeModal, movie}) => {
       return 750;
    };
 
-   const [clientDimensions, setClientDimensions] = useState({
-      width: getWidth(),
-      height: getHeight()
-   });
-   const [isLoading, setIsLoading] = useState(true);
-
-   const medScreenPlus = clientDimensions.width >= 960;
-
    const classes = {
       ...useSharedStyles(),
       ...useModalCardStyles({
@@ -85,8 +87,6 @@ const ModalCard = ({closeModal, movie}) => {
       return () => window.removeEventListener("resize", onResize());
    }, []);
 
-   const capitalise = text => text ? text.charAt(0).toUpperCase() + text.slice(1) : "";
-
    return (
       <>
          <article className={`${classes.modalCard}`}>
@@ -95,12 +95,10 @@ const ModalCard = ({closeModal, movie}) => {
                   className={`${classes.title}`}
                   variant="h6"
                >
-                  {/* <Box lineHeight={1}> */}
                   {movie.Title}
                   {medScreenPlus &&
-                        <span>({movie.Year} {capitalise(movie.Type)})</span>
+                        <span>({movie.Year} {upperFirst(movie.Type)})</span>
                   }
-                  {/* </Box> */}
                </Typography>
                <CloseIcon
                   fontSize="inherit"
@@ -109,53 +107,41 @@ const ModalCard = ({closeModal, movie}) => {
                />
             </div>
             <div className={`${classes.modalContent} ${classes.customScrollbar}`}>
-               {movie.Poster !== "N/A" &&
-                     <img
-                        className={`${classes.cardImg} modalImg`}
-                        src={movie.Poster}
-                        alt={movie.Title}
-                        onLoad={() => setIsLoading(false)}
-                     />
-               }
-               {!isLoading &&
-                     <div className={classes.modalBody}>
-                        {!medScreenPlus && (
-                           <Typography
-                              className={`${classes.textBody} ${classes.yearTitle}`}
-                              component="p">
-                                 ({movie.Year} - {capitalise(movie.Type)})
-                           </Typography>
-                        )}
-                        <div className={classes.plotCont}>
-                           <Typography
-                              className={classes.textHead}
-                              component="p">
+               <img
+                  className={`${classes.cardImg} modalImg`}
+                  src={noPoster ? posterPlaceholder : movie.Poster}
+                  alt={movie.Title}
+                  onError={() => setNoPoster(true)}
+               />
+               <div className={classes.modalBody}>
+                  {!medScreenPlus && (
+                     <Typography
+                        className={`${classes.textBody} ${classes.yearTitle}`}
+                        component="p">
+                                 ({movie.Year} - {upperFirst(movie.Type)})
+                     </Typography>
+                  )}
+                  <div className={classes.plotCont}>
+                     <Typography
+                        className={classes.textHead}
+                        component="p">
                                  Plot
-                           </Typography>
-                           <Typography
-                              className={`${classes.textBody} ${classes.plotTxt} ${classes.customScrollbar}`}
-                              component="p">
-                              {capitalise(movie.Plot)}
-                           </Typography>
-                        </div>
-                        {movie.Ratings &&
-                        // <div style={{
-                        //    display: "flex",
-                        //    flexDirection: "row",
-                        //    justifyContent: "space-between",
-                        //    alignItems: "center"
-                        // }}>
-                        //    <p>Ratings: </p>
-                           <MovieRatings
-                              styles={classes.scoresModal}
-                              ratings={movie.Ratings}
-                              title={movie.title}
-                              imdbId={movie.imdbID}
-                           />
-                        // </div>
-                        }
-                     </div>
-               }
+                     </Typography>
+                     <Typography
+                        className={`${classes.textBody} ${classes.plotTxt} ${classes.customScrollbar}`}
+                        component="p">
+                        {upperFirst(movie.Plot)}
+                     </Typography>
+                  </div>
+                  {movie.Ratings &&
+                     <MovieRatings
+                        styles={classes.scoresModal}
+                        ratings={movie.Ratings}
+                        title={movie.title}
+                        imdbId={movie.imdbID}
+                     />
+                  }
+               </div>
             </div>
          </article>
       </>
