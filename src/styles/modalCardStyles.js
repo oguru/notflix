@@ -48,9 +48,11 @@ const useModalCardStyles = makeStyles((theme) => ({
 
    modalBody: {
       width: "100%",
+      display: "flex",
+      flexDirection: "column",
+      flexGrow: 1,
 
       [theme.breakpoints.up("md")]: {
-         display: "flex",
          flexDirection: "column-reverse",
          height: "100%",
          justifyContent: "space-between",
@@ -101,6 +103,7 @@ const useModalCardStyles = makeStyles((theme) => ({
       alignItems: "center",
       display: "flex",
       flexDirection: "column",
+      flexGrow: 1,
       // height: (props) => `${props.modalHeight - 65}px`,
       justifyContent: "space-between",
       overflow: "auto",
@@ -125,11 +128,11 @@ const useModalCardStyles = makeStyles((theme) => ({
    },
 
    plotCont: {
+      flexGrow: 1,
       [theme.breakpoints.up("md")]: {
          display: "flex",
          flexDirection: "column",
-         order: "2",
-         flexGrow: 1
+         order: "2"
       }
    },
 
