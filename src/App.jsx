@@ -75,8 +75,9 @@ const App = () => {
    const classes = useAppStyles({detailMode: movieState.detailMode});
 
    const fetchData = async ({query, param, page = 1}) => {
-      const results = await fetch(`https://www.omdbapi.com/?apikey=a6790f0e&${param}=${query}&page=${page}&plot=full`)
-         .then(res => res.json());
+      const path = `https://www.omdbapi.com/?apikey=a6790f0e&${param}=${query}&page=${page}&plot=full`;
+
+      const results = await fetch(path).then(res => res.json());
 
       const detailedResults = [];
 
