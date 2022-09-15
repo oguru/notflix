@@ -8,16 +8,6 @@ const useMovieCardStyles = makeStyles((theme) => ({
       justifyContent: "space-between"
    },
 
-   cardExpandOff: {
-      transform: "scale(1)",
-      transition: "0.2s ease-in-out"
-   },
-
-   cardExpandOn: {
-      transform: "scale(1.075)",
-      transition: "0.2s ease-in-out"
-   },
-
    flexColumn: {
       alignItems: "center",
       display: "flex",
@@ -37,7 +27,13 @@ const useMovieCardStyles = makeStyles((theme) => ({
       justifyContent: "space-between",
       padding: theme.spacing(2.5),
       textAlign: "center",
-      width: "300px"
+      transform: "scale(1)",
+      transition: "0.2s ease-in-out",
+      width: "300px",
+
+      "&:hover": {
+         transform: "scale(1.075)"
+      }
    },
 
    noPosterStyle: {
