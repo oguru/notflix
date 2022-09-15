@@ -62,10 +62,6 @@ const useModalCardStyles = makeStyles((theme) => ({
 
    modalCard: {
       backgroundColor: "#eef1fc",
-      // border:
-      //    `${theme.palette.background.default}
-      //    solid
-      //    ${theme.spacing(2)}px`,
       borderTop: 0,
       borderRadius: theme.spacing(0.5),
       boxShadow: theme.shadows[5],
@@ -74,29 +70,10 @@ const useModalCardStyles = makeStyles((theme) => ({
       alignItems: "center",
       height: (props) => `${props.modalHeight}px`,
       left: (props) => `${props.halfClientWidth - props.modalWidth / 2}px`,
-      // left: () => 0,
       overflow: "hidden",
       position: "fixed",
-      // top: (props) => `calc(50vh - ${props.modalHeight}px/2)`,
       top: (props) => `calc(50vh - ${props.modalHeight}px/2)`,
-      width: (props) => `${props.modalWidth}px`,
-      // width: () => "100vw",
-
-      [theme.breakpoints.up("sm")]: {
-         // height: (props) => `${props.modalHeight * 1.25}px`,
-         // left: (props) => `${props.halfClientWidth - props.modalWidth * 0.625}px`,
-         // top: (props) => `calc(50vh - ${props.modalHeight * 0.625}px)`
-         // width: (props) => `${props.modalWidth * 1.25}px`
-      },
-
-      [theme.breakpoints.up("md")]: {
-
-         // height: (props) => `${props.modalHeight}px`,
-         // left: (props) => `${props.halfClientWidth - props.modalWidth * 1.125}px`,
-         overflow: "visible"
-         // top: (props) => `calc(50vh - ${props.modalHeight / 2}px)`
-         // width: (props) => `${props.modalWidth * 2.25}px`
-      }
+      width: (props) => `${props.modalWidth}px`
    },
 
    modalContent: {
@@ -104,7 +81,6 @@ const useModalCardStyles = makeStyles((theme) => ({
       display: "flex",
       flexDirection: "column",
       flexGrow: 1,
-      // height: (props) => `${props.modalHeight - 65}px`,
       justifyContent: "space-between",
       overflow: "auto",
       padding: `${theme.spacing(2)}px ${theme.spacing(2)}px`,
@@ -123,7 +99,6 @@ const useModalCardStyles = makeStyles((theme) => ({
          height: (props) => `${props.modalHeight - 65}px`,
          overflow: "hidden",
          justifyContent: "flex-start"
-         // padding: `${theme.spacing(2)}px ${theme.spacing(2)}px 0`
       }
    },
 
@@ -149,7 +124,6 @@ const useModalCardStyles = makeStyles((theme) => ({
    scoresModal: {
       justifyContent: "space-evenly",
       margin: `${theme.spacing(3)}px 0 ${theme.spacing(1)}px`,
-      // paddingBottom: theme.spacing(2),
 
       [theme.breakpoints.up("md")]: {
          "& .rating": {
@@ -183,7 +157,6 @@ const useModalCardStyles = makeStyles((theme) => ({
       textTransform: "uppercase",
       letterSpacing: "2px",
       lineHeight: 1,
-      // padding: theme.spacing(2),
       paddingTop: "5px",
       paddingRight: theme.spacing(1),
 
