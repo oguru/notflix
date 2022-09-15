@@ -20,19 +20,14 @@ const MovieCard = (props) => {
       movie: PropTypes.object
    };
 
-   const [hovered, setHovered] = useState(false);
    const [noPoster, setNoPoster] = useState(movie.Poster === "N/A");
-
-   const cardExpandClass = hovered && detailMode ? "cardExpandOn" : "cardExpandOff";
 
    return (
       <>
-         <Card raised={hovered}
-            onMouseEnter={() => setHovered(true)}
-            onMouseLeave={() => setHovered(false)}
-            onClick={() => handleShowModal()}
+         <Card
+            className={classes.movieCard}
             elevation={1}
-            className={`${classes.movieCard} ${classes[cardExpandClass]}`}
+            onClick={handleShowModal}
          >
             <div className={classes.flexColumn}>
                {noPoster && (
