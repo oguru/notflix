@@ -44,15 +44,18 @@ const useGlobalStyles = makeStyles({
       body: {
          backgroundColor: theme.palette.background.default
       },
+
       html: {
          "&::-webkit-scrollbar": {
             width: "17px"
          },
+
          "&::-webkit-scrollbar-track": {
             backgroundColor: theme.palette.background.default,
             boxShadow: "inset 0 0 6px rgba(255, 255, 255, 0.1)",
             borderLeft: `2px solid ${theme.palette.primary.main}`
          },
+
          "&::-webkit-scrollbar-thumb": {
             borderLeft: `${theme.palette.primary.main} solid 3px`,
             backgroundColor: theme.palette.secondary.main,

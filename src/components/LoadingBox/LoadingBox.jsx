@@ -62,12 +62,12 @@ const LoadingBox = (props) => {
    return (
       <>
          <Card
-            elevation={1}
             className={`
                ${cardClasses.flexColumn} 
                ${cardClasses.movieCard} 
                ${classes.pulse}`
             }
+            elevation={1}
          >
             <div className={`
                ${cardClasses.cardImg} 
@@ -85,12 +85,12 @@ const LoadingBox = (props) => {
                   <section className={`${cardClasses.scores}`}>
                      {[...Array(3).keys()].map((key) => (
                         <div
-                           key={`rating${index}${key}`}
                            className={`
                               ${cardClasses.rating} 
                               ${classes.ghostRating} 
                               ${classes.ghostContainer}`
                            }
+                           key={`rating${index}${key}`}
                         />
                      ))}
                   </section>}

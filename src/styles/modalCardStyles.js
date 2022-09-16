@@ -5,6 +5,7 @@ const useModalCardStyles = makeStyles((theme) => ({
       "&:hover": {
          transform: "scale(1.1)"
       },
+
       alignSelf: "flex-start",
       color: "white",
       cursor: "pointer",
@@ -47,10 +48,10 @@ const useModalCardStyles = makeStyles((theme) => ({
    },
 
    modalBody: {
-      width: "100%",
       display: "flex",
       flexDirection: "column",
       flexGrow: 1,
+      width: "100%",
 
       [theme.breakpoints.up("md")]: {
          flexDirection: "column-reverse",
@@ -61,13 +62,13 @@ const useModalCardStyles = makeStyles((theme) => ({
    },
 
    modalCard: {
+      alignItems: "center",
       backgroundColor: "#eef1fc",
-      borderTop: 0,
       borderRadius: theme.spacing(0.5),
+      borderTop: 0,
       boxShadow: theme.shadows[5],
       display: "flex",
       flexDirection: "column",
-      alignItems: "center",
       height: (props) => `${props.modalHeight}px`,
       left: (props) => `${props.halfClientWidth - props.modalWidth / 2}px`,
       overflow: "hidden",
@@ -97,13 +98,14 @@ const useModalCardStyles = makeStyles((theme) => ({
          alignItems: "flex-start",
          flexDirection: "row",
          height: (props) => `${props.modalHeight - 65}px`,
-         overflow: "hidden",
-         justifyContent: "flex-start"
+         justifyContent: "flex-start",
+         overflow: "hidden"
       }
    },
 
    plotCont: {
       flexGrow: 1,
+
       [theme.breakpoints.up("md")]: {
          display: "flex",
          flexDirection: "column",
@@ -113,6 +115,7 @@ const useModalCardStyles = makeStyles((theme) => ({
 
    plotTxt: {
       overflowY: "auto",
+
       [theme.breakpoints.up("md")]: {
          flexGrow: 1,
          height: "240px",
@@ -131,9 +134,7 @@ const useModalCardStyles = makeStyles((theme) => ({
          },
 
          justifyContent: "flex-end",
-         margin: `
-            0 
-            ${theme.spacing(1)}px`
+         margin: `0 ${theme.spacing(1)}px`
       }
    },
 
@@ -150,23 +151,23 @@ const useModalCardStyles = makeStyles((theme) => ({
 
    title: {
       color: "white",
+      fontFamily: "BebasNeue",
       fontSize: "26px",
       fontWeight: "600",
-      textAlign: "left",
-      fontFamily: "BebasNeue",
-      textTransform: "uppercase",
       letterSpacing: "2px",
       lineHeight: 1,
-      paddingTop: "5px",
       paddingRight: theme.spacing(1),
+      paddingTop: "5px",
+      textAlign: "left",
+      textTransform: "uppercase",
 
       [theme.breakpoints.up("md")]: {
          "& span": {
             fontSize: "20px",
             fontWeight: "normal",
-            textTransform: "none",
             letterSpacing: "1px",
-            marginLeft: theme.spacing(1.5)
+            marginLeft: theme.spacing(1.5),
+            textTransform: "none"
          }
 
       }

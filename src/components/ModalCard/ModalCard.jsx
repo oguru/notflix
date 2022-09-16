@@ -19,8 +19,8 @@ const ModalCard = ({closeModal, movie}) => {
 
    const [noPoster, setNoPoster] = useState(movie.Poster === "N/A");
    const [clientDimensions, setClientDimensions] = useState({
-      width: getWidth(),
-      height: getHeight()
+      height: getHeight(),
+      width: getWidth()
    });
 
    const medScreenPlus = clientDimensions.width >= 960;
@@ -101,17 +101,17 @@ const ModalCard = ({closeModal, movie}) => {
                   }
                </Typography>
                <CloseIcon
-                  fontSize="inherit"
                   className={classes.closeIcon}
+                  fontSize="inherit"
                   onClick={() => closeModal()}
                />
             </div>
             <div className={`${classes.modalContent} ${classes.customScrollbar}`}>
                <img
-                  className={`${classes.cardImg} modalImg`}
-                  src={noPoster ? posterPlaceholder : movie.Poster}
                   alt={movie.Title}
+                  className={`${classes.cardImg} modalImg`}
                   onError={() => setNoPoster(true)}
+                  src={noPoster ? posterPlaceholder : movie.Poster}
                />
                <div className={classes.modalBody}>
                   {!medScreenPlus && (
@@ -128,17 +128,21 @@ const ModalCard = ({closeModal, movie}) => {
                                  Plot
                      </Typography>
                      <Typography
-                        className={`${classes.textBody} ${classes.plotTxt} ${classes.customScrollbar}`}
+                        className={`
+                           ${classes.textBody} 
+                           ${classes.plotTxt} 
+                           ${classes.customScrollbar}
+                        `}
                         component="p">
                         {upperFirst(movie.Plot)}
                      </Typography>
                   </div>
                   {movie.Ratings &&
                      <MovieRatings
-                        styles={classes.scoresModal}
-                        ratings={movie.Ratings}
-                        title={movie.title}
                         imdbId={movie.imdbID}
+                        ratings={movie.Ratings}
+                        styles={classes.scoresModal}
+                        title={movie.title}
                      />
                   }
                </div>

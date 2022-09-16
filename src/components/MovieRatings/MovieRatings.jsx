@@ -7,13 +7,13 @@ import rtIcon from "../../assets/tomato-svg-logo-2.png";
 import useMovieCardStyles from "../../styles/movieCardStyles";
 
 const MovieRatings = (props) => {
-   const {styles = "", ratings, title, imdbId} = props;
+   const {imdbId, ratings, styles = "", title} = props;
 
    MovieRatings.propTypes = {
-      styles: PropTypes.string,
+      imdbId: PropTypes.string,
       ratings: PropTypes.arrayOf(PropTypes.object),
-      title: PropTypes.string,
-      imdbId: PropTypes.string
+      styles: PropTypes.string,
+      title: PropTypes.string
    };
 
    const ratingData = {

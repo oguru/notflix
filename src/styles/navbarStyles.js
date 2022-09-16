@@ -123,7 +123,7 @@ const useNavbarStyles = makeStyles((theme) => ({
    notflix: {
       height: theme.spacing(5),
       overflow: "hidden",
-      transition: (props) => `transform ${props.nIconSpeed}ms cubic-bezier(0, 0, 0.2, 1) 0ms`
+      transition: (props) => `transform ${props.nIconTransition}ms cubic-bezier(0, 0, 0.2, 1) 0ms`
    },
 
    paperHelp: {

@@ -85,9 +85,9 @@ const useMovieCardStyles = makeStyles((theme) => ({
       justifyContent: "center",
 
       "& h6": {
-         display: "-webkit-box",
          "-webkit-box-orient": "vertical",
          "-webkit-line-clamp": 2,
+         display: "-webkit-box",
          overflow: "hidden"
       }
    }
