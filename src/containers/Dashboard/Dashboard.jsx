@@ -42,6 +42,7 @@ const Dashboard = (props) => {
          justifyContent: "center",
          padding: theme.spacing(1.5)
       },
+
       initTxt: {
          color: theme.palette.text.primary,
          fontStyle: "italic",
@@ -130,12 +131,12 @@ const Dashboard = (props) => {
          </Grid>
          <Modal
             closeAfterTransition
-            onClose={handleCloseModal}
-            open={modalState.open}
             BackdropComponent={Backdrop}
             BackdropProps={{
                timeout: 500
             }}
+            onClose={handleCloseModal}
+            open={modalState.open}
          >
             <Fade in={modalState.open}>
                <ModalCard

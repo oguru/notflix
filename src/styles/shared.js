@@ -13,11 +13,11 @@ const useSharedStyles = makeStyles((theme) => ({
          objectFit: "contain",
 
          [theme.breakpoints.up("md")]: {
-            objectFit: "cover",
-            maxHeight: "100%",
             height: "368px",
+            maxHeight: "100%",
             maxWidth: "360px",
             minWidth: "240px",
+            objectFit: "cover",
             top: theme.spacing(2)
          }
       }

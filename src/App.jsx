@@ -1,18 +1,19 @@
 import React, {useReducer, useState} from "react";
-import {Slide, Snackbar} from "@material-ui/core";
 import BottomScrollListener from "react-bottom-scroll-listener";
 import Dashboard from "./containers/Dashboard";
 import Navbar from "./components/Navbar";
+import Slide from "@material-ui/core/Slide";
+import Snackbar from "@material-ui/core/Snackbar";
 import useAppStyles from "./styles/appStyles";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 
 const initialState = {
-   searchTerm: "",
-   page: 1,
    detailMode: true,
+   page: 1,
    results: [],
-   totalResults: 0,
-   snackbar: false
+   searchTerm: "",
+   snackbar: false,
+   totalResults: 0
 };
 
 const reducer = (state, action) => {
@@ -28,9 +29,9 @@ const reducer = (state, action) => {
 
             return {
                ...state,
-               searchTerm: action.searchTerm,
                page,
                results,
+               searchTerm: action.searchTerm,
                totalResults: action.totalResults
             };
          }
@@ -38,8 +39,10 @@ const reducer = (state, action) => {
          // if updating existing results
          results = action.results;
 
-         return {...state,
-            results};
+         return {
+            ...state,
+            results
+         };
       case "addPage":
          results = [...state.results, ...action.results];
          page = state.page + 1;
@@ -57,11 +60,15 @@ const reducer = (state, action) => {
             snackbar: true
          };
       case "closeSnackbar":
-         return {...state,
-            snackbar: false};
+         return {
+            ...state,
+            snackbar: false
+         };
       case "reset":
-         return {...initialState,
-            detailMode: state.detailMode};
+         return {
+            ...initialState,
+            detailMode: state.detailMode
+         };
       default:
          throw new Error();
    }
@@ -116,37 +123,37 @@ const App = () => {
       setIsLoading(true);
 
       const results = await fetchData({
-         query: trimmedQuery,
-         param: "s"
+         param: "s",
+         query: trimmedQuery
       });
 
       if (!results.Error) {
          if (movieState.detailMode) {
             Promise.all(results.results).then(res => {
                dispatch({
-                  type: "setMovies",
                   results: res,
+                  searchTerm: trimmedQuery,
                   totalResults: results.totalResults,
-                  searchTerm: trimmedQuery
+                  type: "setMovies"
                });
                setIsLoading(false);
             });
          } else {
             dispatch({
-               type: "setMovies",
                results: results.Search,
+               searchTerm: trimmedQuery,
                totalResults: results.totalResults,
-               searchTerm: trimmedQuery
+               type: "setMovies"
             });
             setIsLoading(false);
          }
       } else {
          // if error
          dispatch({
-            type: "setMovies",
             results: [],
+            searchTerm: trimmedQuery,
             totalResults: 0,
-            searchTerm: trimmedQuery
+            type: "setMovies"
          });
          setIsLoading(false);
       }
@@ -185,8 +192,10 @@ const App = () => {
          }
       }
 
-      dispatch({type: "toggleDetail",
-         results: updatedResults});
+      dispatch({
+         results: updatedResults,
+         type: "toggleDetail"
+      });
    };
 
    const updateSingleMovieDetails = async (index) => {
@@ -198,8 +207,10 @@ const App = () => {
       });
       movieResults.splice(index, 1, movieDetails);
 
-      dispatch({type: "setMovies",
-         results: movieResults});
+      dispatch({
+         results: movieResults,
+         type: "setMovies"
+      });
    };
 
    const addPage = () => {
@@ -213,26 +224,26 @@ const App = () => {
          const newPageNum = movieState.page + 1;
 
          const results = fetchData({
-            query: movieState.searchTerm,
+            page: newPageNum,
             param: "s",
-            page: newPageNum
+            query: movieState.searchTerm
          });
 
          Promise.resolve(results).then(res => {
             if (movieState.detailMode) {
                Promise.all(res.results).then(detailedRes => {
                   dispatch({
-                     type: "addPage",
+                     page: newPageNum,
                      results: detailedRes,
-                     page: newPageNum
+                     type: "addPage"
                   });
                   setIsLoading(false);
                });
             } else {
                dispatch({
-                  type: "addPage",
+                  page: newPageNum,
                   results: res.Search,
-                  page: newPageNum
+                  type: "addPage"
                });
                setIsLoading(false);
             }
@@ -244,9 +255,9 @@ const App = () => {
       <>
          <section className={classes.app}>
             <Navbar
-               handleToggleDetailMode={handleToggleDetailMode}
                detailMode={movieState.detailMode}
                handleSubmitSearch={handleSearch}
+               handleToggleDetailMode={handleToggleDetailMode}
                isLoading={isLoading}
                searchTxt={searchTxt}
                setSearchTxt={setSearchTxt}
@@ -254,32 +265,32 @@ const App = () => {
             <section className={classes.dashboard}>
                <Dashboard
                   detailMode={movieState.detailMode}
-                  updateSingleMovieDetails={updateSingleMovieDetails}
                   isLoading={isLoading}
                   movieResults={movieState.results}
                   searchError={
                      Boolean(movieState.searchTerm && !movieState.totalResults)
                   }
                   searchTxt={searchTxt}
+                  updateSingleMovieDetails={updateSingleMovieDetails}
                   xsScreen={xsScreen}
                />
             </section>
             <BottomScrollListener
-               triggerOnNoScroll={movieState.totalResults}
                debounceOptions={200}
                offset={250}
                onBottom={addPage}
+               triggerOnNoScroll={movieState.totalResults}
             />
          </section>
          <Snackbar
             TransitionComponent={Slide}
             autoHideDuration={1500}
             classes={{root: classes.snackBar}}
+            key={movieState.detailMode ? "d" : "f"}
             message={movieState.detailMode ?
                "Detail mode enabled" :
                "Fast mode enabled"
             }
-            key={movieState.detailMode ? "d" : "f"}
             onClose={() => dispatch({type: "closeSnackbar"})}
             open={movieState.snackbar}
          />

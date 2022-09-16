@@ -1,18 +1,9 @@
+import {AppBar, Button, CircularProgress, Drawer, InputBase, Paper, Popper, Switch, Toolbar, Typography} from "@material-ui/core";
 import React, {useEffect, useState} from "react";
-import AppBar from "@material-ui/core/AppBar";
-import Button from "@material-ui/core/Button";
-import CircularProgress from "@material-ui/core/CircularProgress";
 import CloseIcon from "@material-ui/icons/Close";
-import Drawer from "@material-ui/core/Drawer";
 import HelpIcon from "@material-ui/icons/Help";
-import InputBase from "@material-ui/core/InputBase";
-import Paper from "@material-ui/core/Paper";
-import Popper from "@material-ui/core/Popper";
 import PropTypes from "prop-types";
 import SearchIcon from "@material-ui/icons/Search";
-import Switch from "@material-ui/core/Switch";
-import Toolbar from "@material-ui/core/Toolbar";
-import Typography from "@material-ui/core/Typography";
 import nImg from "../../assets/n-logo.png";
 import notflixImg from "../../assets/notflix-logo-800.png";
 import useNavbarStyles from "../../styles/navbarStyles.js";
@@ -40,29 +31,29 @@ const Navbar = (props) => {
    };
 
    const [anchorEl, setAnchorEl] = useState(null);
-   const [searchOpen, toggleSearch] = useState(false);
+   const [searchOpen, setSearchOpen] = useState(false);
    const scrollTrigger = useScrollTrigger();
 
    const helpOpen = Boolean(anchorEl);
    const classes = useNavbarStyles({
       isLoading,
-      nIconSpeed: searchOpen ? 225 : 425
+      nIconTransition: searchOpen ? 225 : 425
    });
 
    useEffect(() => {
       if (searchOpen && scrollTrigger) {
-         toggleSearch(false);
+         setSearchOpen(false);
       }
    }, [scrollTrigger]);
 
    const handleToggleSearch = () => {
       if (xsScreen) {
-         toggleSearch(!searchOpen);
+         setSearchOpen(!searchOpen);
       }
    };
 
    const handleSubmit = () => {
-      toggleSearch();
+      handleToggleSearch();
       handleSubmitSearch({query: searchTxt});
    };
 
@@ -121,34 +112,34 @@ const Navbar = (props) => {
             ${classes.appBarStyles} 
             ${scrollTrigger ? classes.navHide : classes.navShow}
          `}
-         position="static"
          onClick={() => handleToggleSearch()}
+         position="static"
       >
          <Toolbar className={classes.navStyles}>
             <div className={classes.topBar}>
                <img
+                  alt="Notflix Logo"
                   className={`
                      ${classes.notflix} 
                      ${searchOpen ? classes.nfAnim : ""}
                   `}
                   src={notflixImg}
-                  alt="Notflix Logo"
                />
                <Popper
+                  anchorEl={anchorEl}
                   className={classes[helpOpen ? "popper" : ""]}
                   open={helpOpen}
-                  anchorEl={anchorEl}
                >
                   <Paper
-                     onClick={e => e.stopPropagation()}
-                     className={classes.paperHelp}
-                     variant="outlined"
                      backgroundColor="white"
+                     className={classes.paperHelp}
                      elevation={23}
+                     onClick={e => e.stopPropagation()}
+                     variant="outlined"
                   >
                      <CloseIcon
-                        onClick={() => setAnchorEl(false)}
                         className={classes.closeIcon}
+                        onClick={() => setAnchorEl(false)}
                      />
                      <Typography className={classes.helpTitle} paragraph={false}>
                         Switch On - Full Mode:
@@ -173,18 +164,18 @@ const Navbar = (props) => {
                      onClick={toggleHelp}
                   />
                   <Switch
-                     className={classes.displaySwitch}
-                     onClick={(e) => e.stopPropagation()}
-                     onChange={() => handleToggleDetailMode()}
                      checked={detailMode}
+                     className={classes.displaySwitch}
+                     onChange={() => handleToggleDetailMode()}
+                     onClick={(e) => e.stopPropagation()}
                   />
                </div>
             </div>
             {xsScreen ?
                <Drawer
-                  variant="persistent"
                   anchor="top"
                   open={searchOpen}
+                  variant="persistent"
                >
                   {searchBar}
                </Drawer> : searchBar}
