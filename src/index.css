@@ -1,3 +1,14 @@
+* {
+   padding: 0;
+   margin: 0;
+   box-sizing: border-box;
+ }
+
+ @font-face {
+   font-family: 'BebasNeue';
+   src: local('BebasNeue'), url('./assets/BebasNeue.otf') format('openType');
+ }
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',

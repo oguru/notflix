@@ -1,19 +1,34 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "Notflix",
+  "name": "Notflix TV and Movie Database",
   "icons": [
     {
       "src": "favicon.ico",
-      "sizes": "64x64 32x32 24x24 16x16",
+      "sizes": "64x64 48x48 32x32 16x16",
       "type": "image/x-icon"
     },
     {
-      "src": "logo192.png",
+      "src": "favicon-16x16.png",
+      "size" : "16x16",
+      "type": "image/png" 
+    },
+    {
+      "src": "favicon-32x32.png",
+      "size" : "32x32",
+      "type": "image/png" 
+    },
+    {
+      "src": "apple-touch-icon.png",
+      "size" : "180x180",
+      "type": "image/png" 
+    },
+    {
+      "src": "android-chrome-192x192.png",
       "type": "image/png",
       "sizes": "192x192"
     },
     {
-      "src": "logo512.png",
+      "src": "android-chrome-512x512",
       "type": "image/png",
       "sizes": "512x512"
     }

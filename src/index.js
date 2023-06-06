@@ -1,11 +1,10 @@
 import "./index.css";
 import * as serviceWorker from "./serviceWorker";
-import {ThemeProvider, createMuiTheme} from "@material-ui/core/styles";
+import {ThemeProvider, createMuiTheme, makeStyles} from "@material-ui/core/styles";
 import App from "./App";
+import PropTypes from "prop-types";
 import React from "react";
 import ReactDOM from "react-dom";
-
-// nice orange rgba(252, 91, 5, 1)
 
 const theme = createMuiTheme({
    overrides: {
@@ -21,26 +20,14 @@ const theme = createMuiTheme({
          default: "#163b50",
          paper: "#0a2332"
       },
-      common: {
-         black: "#000",
-         white: "#fff"
-      },
       error: {
-         contrastText: "#fff",
-         dark: "#d32f2f",
-         light: "#e57373",
          main: "rgba(229, 9, 20, 1)"
       },
       primary: {
-         contrastText: "#fff",
-         dark: "rgba(37, 130, 187, 1)",
-         light: "rgba(201, 194, 84, 1)",
          main: "rgba(10, 35, 50, 1)"
       },
       secondary: {
-         contrastText: "#fff",
          dark: "rgba(43, 89, 195, 1)",
-         light: "#ff4081",
          main: "rgba(229, 9, 20, 1)"
       },
       text: {
@@ -52,22 +39,49 @@ const theme = createMuiTheme({
    }
 });
 
-/*
- * #055E94 - old nav colour
- * #4486AF - old search colour
- */
+const useGlobalStyles = makeStyles({
+   "@global": {
+      body: {
+         backgroundColor: theme.palette.background.default
+      },
 
-/*
- *#163b50 page bg
- *#0f2837 card and nav bg
- */
+      html: {
+         "&::-webkit-scrollbar": {
+            width: "17px"
+         },
 
-ReactDOM.render(<React.StrictMode>
-   <ThemeProvider theme={theme}>
-      <App />
-   </ThemeProvider>
-</React.StrictMode>,
-document.getElementById("root"));
+         "&::-webkit-scrollbar-track": {
+            backgroundColor: theme.palette.background.default,
+            boxShadow: "inset 0 0 6px rgba(255, 255, 255, 0.1)",
+            borderLeft: `2px solid ${theme.palette.primary.main}`
+         },
+
+         "&::-webkit-scrollbar-thumb": {
+            borderLeft: `${theme.palette.primary.main} solid 3px`,
+            backgroundColor: theme.palette.secondary.main,
+            borderRadius: "3px"
+         }
+      }
+   }
+});
+
+const MyThemeProvider = ({children}) => {
+   MyThemeProvider.propTypes = {
+      children: PropTypes.object
+   };
+
+   useGlobalStyles();
+   return <ThemeProvider theme={theme}>{children}</ThemeProvider>;
+};
+
+ReactDOM.render(
+   <React.StrictMode>
+      <MyThemeProvider theme={theme}>
+         <App />
+      </MyThemeProvider>
+   </React.StrictMode>,
+   document.getElementById("root")
+);
 
 /*
  * If you want your app to work offline and load faster, you can change
