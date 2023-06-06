@@ -22,4 +22,4 @@ JSS\
 Firebase\
 mkrc
 
-#### [Link](https://notflix.peterdev.co.uk/) to live hosted project.
+#### [Link](https://notflix.petedev.co.uk/) to live hosted project.
